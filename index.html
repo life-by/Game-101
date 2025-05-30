@@ -1,0 +1,1039 @@
+ <!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলা শব্দ সাজানো</title>
+<!-- data.js স্ক্রিপ্ট এখানে বা body-র শেষে যোগ করতে পারেন -->
+<script src="Sub/data.js"></script> 
+
+
+<style>
+    /* Google Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap');
+
+    :root {
+        --bg-color: #f8f9fa; /* একটু হালকা ব্যাকগ্রাউন্ড */
+        --container-bg: #ffffff;
+        --text-color: #343a40; /* গাঢ় টেক্সট */
+        --primary-color: #00796b; /* একটু ভিন্ন সবুজ */
+        --secondary-color: #80cbc4; /* হালকা সবুজ */
+        --hint-color: #ff8f00;   /* কমলা */
+        --shop-color: #1e88e5;   /* নীল */
+        --tile-bg: #e0f2f1;      /* টাইল ব্যাকগ্রাউন্ড */
+        --tile-border: #b2dfdb;
+        --tile-hover-bg: #c8e6c9;
+        --tile-disabled-bg: #e0e0e0;
+        --input-bg: #e0f7fa;
+        --input-border: #b2ebf2;
+        --correct-color: #2e7d32; /* গাঢ় সবুজ */
+        --incorrect-color: #c62828; /* গাঢ় লাল */
+        --border-color: #dee2e6; /* হালকা বর্ডার */
+        --reload-btn-bg: #ffc107; /* হলুদ */
+        --reload-btn-border: #ffb300;
+        --reload-btn-text: #212529;
+        --backspace-btn-bg: #ffcc80; /* হালকা কমলা */
+        --backspace-btn-border: #ffb74d;
+        --backspace-btn-text: #212529;
+        --free-hint-btn-bg: #4caf50; /* উজ্জ্বল সবুজ */
+        --free-hint-btn-border: #388e3c;
+        --free-hint-btn-text: white;
+        --proceed-spin-bg: #43a047;
+        --proceed-spin-border: #388e3c;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* উন্নত শ্যাডো */
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: 'Noto Sans Bengali', sans-serif;
+        display: flex;
+        flex-direction: column; /* কন্টেন্ট উল্লম্বভাবে সাজানোর জন্য */
+        align-items: center; /* কন্টেন্ট মাঝে আনার জন্য */
+        min-height: 100vh;
+        margin: 0;
+        padding: 10px 15px; /* সামগ্রিক প্যাডিং */
+        box-sizing: border-box;
+        line-height: 1.6;
+    }
+
+    .ad-container {
+        width: 100%;
+        max-width: 728px; /* অ্যাডের নির্দিষ্ট প্রস্থ */
+        height: auto; /* অটো উচ্চতা, স্ক্রিপ্ট অনুযায়ী সেট হবে */
+        margin: 15px auto; /* উপরে-নিচে মার্জিন, পাশাপাশি অটো সেন্টারিং */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .game-container {
+        background-color: var(--container-bg);
+        border-radius: 16px; /* আরও মোলায়েম বর্ডার */
+        padding: 25px 30px; /* একটু বেশি প্যাডিং */
+        width: 100%;
+        max-width: 550px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        margin-top: 10px; /* উপরের অ্যাড থেকে দূরত্ব */
+        margin-bottom: 10px; /* নিচের অ্যাড থেকে দূরত্ব */
+        transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out; /* Added for effects */
+    }
+    .game-container-victory {
+        box-shadow: 0 0 15px 7px gold, 0 0 25px 12px var(--correct-color);
+    }
+    .game-container-lose {
+        box-shadow: 0 0 15px 7px var(--incorrect-color), 0 0 25px 12px #ff0000;
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+      }
+      20%, 80% {
+        transform: translate3d(2px, 0, 0);
+      }
+      30%, 50%, 70% {
+        transform: translate3d(-3px, 0, 0);
+      }
+      40%, 60% {
+        transform: translate3d(3px, 0, 0);
+      }
+    }
+
+
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px; /* উন্নত ব্যবধান */
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    .status-item {
+        background-color: var(--bg-color);
+        padding: 6px 12px; /* একটু বড় প্যাডিং */
+        border-radius: 20px; /* আরও গোলাকার */
+        color: var(--primary-color);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    #hints-display {
+         color: var(--hint-color);
+    }
+
+    .shop-button {
+        background-color: var(--shop-color);
+        color: white;
+        border: none;
+        padding: 7px 15px; /* উন্নত প্যাডিং */
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: 'Noto Sans Bengali', sans-serif;
+        font-size: 0.9em;
+        transition: background-color 0.2s, opacity 0.2s, transform 0.1s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .shop-button:hover:not(:disabled) {
+         background-color: #1573c4; /* হোভারে গাঢ় নীল */
+         transform: translateY(-1px);
+    }
+    .shop-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .instructions {
+        font-size: 1.15em; /* একটু বড় টেক্সট */
+        color: #495057; /* 약간 গাঢ় টেক্সট */
+        margin-bottom: 20px;
+    }
+
+    .jumbled-tiles-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px; /* টাইলসের মধ্যে বেশি ফাঁকা জায়গা */
+        margin-bottom: 25px;
+        min-height: 50px; /* উন্নত উচ্চতা */
+        padding: 10px;
+        background-color: var(--bg-color);
+        border-radius: 10px; /* গোলাকার কোণ */
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .tile {
+        background-color: var(--tile-bg);
+        border: 1px solid var(--tile-border);
+        color: var(--primary-color);
+        font-size: 1.6em; /* বড় অক্ষর */
+        font-weight: bold;
+        padding: 8px 15px; /* উন্নত প্যাডিং */
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s, opacity 0.2s, box-shadow 0.2s;
+        user-select: none;
+        min-width: 40px; /* ন্যূনতম প্রস্থ */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .tile:hover:not(:disabled) {
+        background-color: var(--tile-hover-bg);
+        transform: translateY(-2px); /* হোভারে সামান্য উপরে উঠবে */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .tile:active:not(:disabled) {
+        transform: scale(0.95);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .tile:disabled {
+        background-color: var(--tile-disabled-bg);
+        color: #757575; /* নিষ্ক্রিয় রঙ */
+        cursor: not-allowed;
+        opacity: 0.7;
+        border-color: #bdbdbd;
+    }
+
+    .input-area-container {
+         margin-bottom: 20px;
+         padding: 15px;
+         background-color: var(--input-bg);
+         border: 1px dashed var(--input-border);
+         border-radius: 10px;
+         min-height: 50px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    #input-display {
+        font-size: 1.8em; /* আরও বড় ইনপুট প্রদর্শন */
+        font-weight: bold;
+        color: var(--primary-color);
+        letter-spacing: 3px; /* অক্ষরের মধ্যে বেশি ফাঁকা */
+        word-break: break-all;
+        min-height: 1.5em; /* উন্নত উচ্চতা */
+    }
+
+     .controls {
+         margin-bottom: 20px;
+         display: flex;
+         justify-content: center;
+         gap: 10px; /* বাটনের মধ্যে বেশি ফাঁকা */
+         flex-wrap: wrap;
+     }
+     .control-button {
+        font-family: 'Noto Sans Bengali', sans-serif;
+        font-size: 0.95em; /* একটু বড় ফন্ট */
+        padding: 10px 18px; /* উন্নত প্যাডিং */
+        border-radius: 25px; /* আরও গোলাকার */
+        cursor: pointer;
+        transition: background-color 0.2s, opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+        border: 1px solid transparent;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+     }
+     .control-button:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+     }
+     .control-button:disabled {
+         opacity: 0.5;
+         cursor: not-allowed;
+         box-shadow: none;
+     }
+
+     #reload-game-button {
+        background-color: var(--reload-btn-bg);
+        border-color: var(--reload-btn-border);
+        color: var(--reload-btn-text);
+     }
+     #reload-game-button:hover:not(:disabled) { background-color: #ffb300; }
+
+     #backspace-button {
+        background-color: var(--backspace-btn-bg);
+        border-color: var(--backspace-btn-border);
+        color: var(--backspace-btn-text);
+     }
+     #backspace-button:hover:not(:disabled) { background-color: #ffb74d; }
+
+     #free-hint-button {
+        background-color: var(--free-hint-btn-bg);
+        border-color: var(--free-hint-btn-border);
+        color: var(--free-hint-btn-text);
+     }
+     #free-hint-button:hover:not(:disabled) { background-color: #388e3c; }
+
+      #hint-button {
+          background-color: var(--hint-color);
+          border-color: #f57c00; /* গাঢ় কমলা বর্ডার */
+          color: white;
+      }
+      #hint-button:hover:not(:disabled) { background-color: #f57c00; }
+
+    #message-area {
+        margin-top: 15px;
+        min-height: 30px; /* বার্তার জন্য উন্নত উচ্চতা */
+        font-size: 1.15em; /* বড় বার্তা */
+        font-weight: bold;
+        padding: 5px;
+    }
+    #message-area.correct { color: var(--correct-color); }
+    #message-area.incorrect { color: var(--incorrect-color); }
+    #message-area.level-up { color: var(--primary-color); }
+    #message-area.info { color: var(--hint-color); }
+    #message-area.shop { color: var(--shop-color); }
+
+    /* Spin Wheel Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.65); /* একটু গাঢ় ওভারলে */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    .modal-content {
+        background-color: var(--container-bg);
+        padding: 30px; /* মডালে বেশি প্যাডিং */
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* উন্নত শ্যাডো */
+        text-align: center;
+        max-width: 420px; /* একটু চওড়া মডাল */
+        width: 100%;
+    }
+
+    .modal-content h2 {
+        color: var(--primary-color);
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-size: 1.8em; /* বড় শিরোনাম */
+    }
+
+    .wheel-container {
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .wheel {
+        display: flex;
+        flex-direction: column;
+        border: 3px solid var(--primary-color);
+        border-radius: 12px; /* মোলায়েম কোণ */
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .wheel-segment {
+        padding: 14px 10px; /* উন্নত প্যাডিং */
+        font-size: 1.1em;
+        font-weight: bold;
+        border-bottom: 1px solid var(--tile-border);
+        background-color: var(--tile-bg);
+        color: var(--text-color);
+        transition: background-color 0.1s, color 0.1s;
+    }
+
+    .wheel-segment:last-child {
+        border-bottom: none;
+    }
+
+    .wheel-segment.spinning-active {
+        background-color: var(--hint-color);
+        color: white;
+    }
+
+    .wheel-segment.highlighted {
+        background-color: var(--correct-color);
+        color: white;
+        font-size: 1.15em; /* হাইলাইট করা সেগমেন্ট একটু বড় */
+    }
+
+    #modal-spin-action-button {
+        background-color: var(--free-hint-btn-bg);
+        border: 1px solid var(--free-hint-btn-border);
+        color: var(--free-hint-btn-text);
+        padding: 12px 25px; /* উন্নত প্যাডিং */
+        font-size: 1.15em; /* বড় ফন্ট */
+        border-radius: 30px;
+        margin-top: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    }
+    #modal-spin-action-button:hover:not(:disabled) {
+         background-color: var(--free-hint-btn-border);
+         transform: translateY(-1px);
+         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    #modal-spin-action-button:disabled{
+        background-color: var(--tile-disabled-bg);
+        border-color: #bdbdbd;
+        color: #757575;
+        box-shadow: none;
+    }
+    #modal-spin-action-button.proceed {
+        background-color: var(--proceed-spin-bg);
+        border-color: var(--proceed-spin-border);
+    }
+    #modal-spin-action-button.proceed:hover:not(:disabled) {
+        background-color: var(--proceed-spin-border);
+    }
+
+
+    #spin-result-message {
+        margin-top: 20px;
+        min-height: 75px;
+        font-weight: bold;
+        font-size: 1.05em;
+        color: var(--primary-color);
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+    <div class="ad-container" id="top-ad-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '6d27287e4227540933eadd31abe0f678',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/6d27287e4227540933eadd31abe0f678/invoke.js"></script>
+    </div>
+<div class="game-container">
+    <div class="status-bar">
+        <span class="status-item" id="level-display">লেভেল: ১</span>
+        <span class="status-item" id="score-display">পয়েন্ট: ০</span>
+        <span class="status-item" id="hints-display">💡 ইঙ্গিত: ০</span>
+        <button id="buy-hints-button" class="shop-button">🛒 কিনুন (৫০০ পয়েন্টে ২টি)</button>
+    </div>
+
+    <div class="instructions">
+        নিচের অংশগুলো সঠিকভাবে সাজিয়ে শব্দটি তৈরি করুন:
+    </div>
+
+    <div class="jumbled-tiles-container" id="jumbled-tiles"></div>
+
+    <div class="input-area-container">
+        <div id="input-display"></div>
+    </div>
+
+    <div class="controls">
+        <button id="reload-game-button" class="control-button">🔄 পুনরায় শুরু</button>
+        <button id="backspace-button" class="control-button">🔙 এক ধাপ মুছুন</button>
+        <button id="free-hint-button" class="control-button">🎁 ফ্রী স্পিন</button>
+        <button id="hint-button" class="control-button">💡 ইঙ্গিত (খরচ)</button>
+    </div>
+
+    <div id="message-area"></div>
+</div>
+
+<!-- Spin Wheel Modal -->
+<div id="spin-wheel-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h2>ফ্রী স্পিন হুইল!</h2>
+        <div class="wheel-container">
+            <div class="wheel">
+                <div class="wheel-segment" data-prize-index="0">২০০ পয়েন্ট</div>
+                <div class="wheel-segment" data-prize-index="1">১টি ইঙ্গিত</div>
+                <div class="wheel-segment" data-prize-index="2">৫০০ পয়েন্ট</div>
+                <div class="wheel-segment" data-prize-index="3">ফাঁকা</div>
+                <div class="wheel-segment" data-prize-index="4">৩টি ইঙ্গিত</div>
+            </div>
+        </div>
+        <button id="modal-spin-action-button" class="control-button">এড দেখে স্পিন করুন</button>
+        <p id="spin-result-message"></p>
+    </div>
+</div>
+
+<div class="ad-container" id="bottom-ad-container">
+    <script type="text/javascript">
+        atOptions = {
+            'key' : '6d27287e4227540933eadd31abe0f678', // একই কী ব্যবহার করা হচ্ছে, প্রয়োজনে ভিন্ন কী ব্যবহার করতে পারেন
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+        };
+    </script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/6d27287e4227540933eadd31abe0f678/invoke.js"></script>
+</div>
+
+<script src="data.js"></script> <!-- data.js ফাইলটি সঠিক পথে লোড করতে হবে -->
+<script>
+    // --- Game State Variables ---
+    let currentLevel = 1;
+    let score = 0;
+    let totalHints = 2;
+    let correctAnswersInLevel = 0;
+    let currentQuestionIndex = -1;
+    let availableQuestions = [];
+    let usedWordIndices = [];
+    let currentWordData = null;
+    let jumbledParts = [];
+    let selectedParts = [];
+    let partTiles = [];
+    let isWaiting = false;
+    let lastPlayedWordObject = null;
+    let freeHintUsedThisWord = false;
+    
+    let adWindowObject = null;
+    const AD_START_TIME_KEY = 'banglaWordGame_adStartTime';
+    const AD_REQUIRED_VIEW_TIME_MS = 20000;
+
+    const HINT_COST = 500;
+    const HINTS_PER_PURCHASE = 2;
+
+    const LS_HINTS_KEY = 'banglaWordGame_totalHints';
+    const LS_SCORE_KEY = 'banglaWordGame_score';
+
+    const gameContainer = document.querySelector('.game-container');
+    const levelDisplay = document.getElementById('level-display');
+    const scoreDisplay = document.getElementById('score-display');
+    const hintsDisplay = document.getElementById('hints-display');
+    const buyHintsButton = document.getElementById('buy-hints-button');
+    const jumbledTilesContainer = document.getElementById('jumbled-tiles');
+    const inputDisplay = document.getElementById('input-display');
+    const messageArea = document.getElementById('message-area');
+
+    const reloadGameButton = document.getElementById('reload-game-button');
+    const backspaceButton = document.getElementById('backspace-button');
+    const freeHintButton = document.getElementById('free-hint-button');
+    const hintButton = document.getElementById('hint-button');
+
+    const spinWheelModal = document.getElementById('spin-wheel-modal');
+    const modalSpinActionButton = document.getElementById('modal-spin-action-button');
+    const spinResultMessage = document.getElementById('spin-result-message');
+
+    const prizes = [
+        { name: "২০০ পয়েন্ট", type: 'points', value: 200, segmentIndex: 0 },
+        { name: "১টি ইঙ্গিত", type: 'hints', value: 1, segmentIndex: 1 },
+        { name: "৫০০ পয়েন্ট", type: 'points', value: 500, segmentIndex: 2 },
+        { name: "ফাঁকা", type: 'empty', segmentIndex: 3, nameBangla: "ফাঁকা" },
+        { name: "৩টি ইঙ্গিত", type: 'hints', value: 3, segmentIndex: 4 }
+    ];
+
+    // --- Audio Elements ---
+    // Ensure win.mp3, button.mp3, and error.mp3 are in the same directory or provide correct path
+    const buttonClickSound = new Audio('Sub/button.mp3');
+    const winSound = new Audio('Sub/win.mp3');
+    const errorSound = new Audio('Sub/error.mp3');
+
+
+    function playSound(audioElement) {
+        if (audioElement) {
+            audioElement.currentTime = 0; 
+            audioElement.play().catch(error => console.warn("Error playing sound:", error)); 
+        }
+    }
+
+
+    function shuffleArray(array) {
+        let newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+    }
+
+    function initializeGameState() {
+        const savedHints = localStorage.getItem(LS_HINTS_KEY);
+        totalHints = savedHints !== null ? parseInt(savedHints, 10) : 2;
+
+        const savedScore = localStorage.getItem(LS_SCORE_KEY);
+        score = savedScore !== null ? parseInt(savedScore, 10) : 0;
+
+        localStorage.setItem(LS_HINTS_KEY, totalHints);
+        localStorage.setItem(LS_SCORE_KEY, score);
+
+        currentLevel = 1;
+        correctAnswersInLevel = 0;
+        usedWordIndices = [];
+        freeHintUsedThisWord = false;
+    }
+
+    function updateUI() {
+        levelDisplay.textContent = `লেভেল: ${currentLevel}`;
+        scoreDisplay.textContent = `পয়েন্ট: ${score}`;
+        hintsDisplay.textContent = `💡 ইঙ্গিত: ${totalHints}`;
+
+        localStorage.setItem(LS_HINTS_KEY, totalHints);
+        localStorage.setItem(LS_SCORE_KEY, score);
+
+        const wordCompletedOrNoWord = !currentWordData || (currentWordData && selectedParts.length >= currentWordData.parts.length);
+        const noMoreQuestions = availableQuestions.length === 0 && wordCompletedOrNoWord;
+
+        buyHintsButton.disabled = score < HINT_COST || isWaiting;
+        hintButton.disabled = totalHints <= 0 || wordCompletedOrNoWord || noMoreQuestions || isWaiting;
+        freeHintButton.disabled = freeHintUsedThisWord || wordCompletedOrNoWord || noMoreQuestions || isWaiting;
+        backspaceButton.disabled = selectedParts.length === 0 || wordCompletedOrNoWord || noMoreQuestions || isWaiting;
+        reloadGameButton.disabled = isWaiting && currentWordData != null && spinWheelModal.style.display === 'none';
+    }
+
+    function showGameMessage(text, type = '') {
+        messageArea.textContent = text;
+        messageArea.className = type;
+         if (type !== 'correct' && type !== 'level-up' && type !== 'incorrect') {
+              setTimeout(() => {
+                   if (messageArea.textContent === text) { 
+                       showGameMessage("", "");
+                   }
+              }, type === 'info' ? 6000 : 4000); 
+          }
+    }
+
+    function filterQuestionsForLevel() {
+        if (typeof wordData === 'undefined' || wordData.length === 0) {
+            console.error("wordData is not defined or empty. Make sure data.js is loaded correctly.");
+            availableQuestions = [];
+            return;
+        }
+        let potentialQuestions = wordData.filter((q, index) =>
+            q.minLevel <= currentLevel && !usedWordIndices.includes(index)
+        );
+        if (potentialQuestions.length > 1 && lastPlayedWordObject !== null) {
+            const tempFiltered = potentialQuestions.filter(q => q.word !== lastPlayedWordObject.word);
+            if (tempFiltered.length > 0) potentialQuestions = tempFiltered;
+        }
+        availableQuestions = potentialQuestions;
+    }
+
+    function loadQuestion() {
+        lastPlayedWordObject = currentWordData;
+        isWaiting = true;
+        freeHintUsedThisWord = false;
+
+        filterQuestionsForLevel();
+
+        if (availableQuestions.length === 0) {
+             if (typeof wordData !== 'undefined' && usedWordIndices.length === wordData.length) {
+                showGameMessage("দারুণ! আপনি সব শব্দ সাজিয়ে ফেলেছেন!", "level-up");
+            } else {
+                showGameMessage("এই লেভেলের জন্য আর কোনো নতুন শব্দ নেই অথবা সব শব্দ শেষ।", "info");
+            }
+            jumbledTilesContainer.innerHTML = "";
+            inputDisplay.textContent = "সমাপ্ত";
+            currentWordData = null;
+            isWaiting = false;
+            updateUI();
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+        currentWordData = availableQuestions[randomIndex];
+         if (typeof wordData !== 'undefined') {
+            currentQuestionIndex = wordData.findIndex(q => q.word === currentWordData.word && q.parts.join('') === currentWordData.parts.join(''));
+        }
+
+
+        jumbledParts = shuffleArray(currentWordData.parts);
+        selectedParts = [];
+        partTiles = [];
+
+        renderTiles();
+        updateInputDisplay();
+        showGameMessage("", "");
+        isWaiting = false;
+        updateUI();
+    }
+
+    function renderTiles() {
+        jumbledTilesContainer.innerHTML = '';
+        partTiles = [];
+        jumbledParts.forEach((part) => {
+            const tile = document.createElement('button');
+            tile.classList.add('tile');
+            tile.textContent = part;
+            tile.onclick = () => handleTileClick(part, tile);
+            jumbledTilesContainer.appendChild(tile);
+            partTiles.push(tile);
+        });
+    }
+
+    function handleTileClick(part, tileElement) {
+        playSound(buttonClickSound);
+        if (isWaiting || tileElement.disabled || !currentWordData) return;
+        isWaiting = true;
+
+        tileElement.classList.add('disabled');
+        tileElement.disabled = true;
+        selectedParts.push({ part: part, tileElement: tileElement });
+        updateInputDisplay();
+
+        if (selectedParts.length === currentWordData.parts.length) {
+            checkWord();
+        } else {
+            isWaiting = false;
+        }
+        updateUI();
+    }
+
+    function updateInputDisplay() {
+        inputDisplay.textContent = selectedParts.map(item => item.part).join('');
+    }
+
+    function handleBackspace() {
+        playSound(buttonClickSound);
+        if (isWaiting || selectedParts.length === 0 || !currentWordData || (currentWordData && selectedParts.length >= currentWordData.parts.length)) {
+            return;
+        }
+        isWaiting = true;
+        const lastSelected = selectedParts.pop();
+        if (lastSelected && lastSelected.tileElement) {
+            lastSelected.tileElement.disabled = false;
+            lastSelected.tileElement.classList.remove('disabled');
+        }
+        updateInputDisplay();
+        showGameMessage("", "");
+        isWaiting = false;
+        updateUI();
+    }
+
+    function applyPaidHintLogic() {
+        const nextCorrectPartIndex = selectedParts.length;
+        const correctNextPart = currentWordData.parts[nextCorrectPartIndex];
+        let hintTileElement = null;
+        for (const tile of partTiles) {
+            if (tile.textContent === correctNextPart && !tile.disabled) {
+                hintTileElement = tile;
+                break;
+            }
+        }
+
+        if (hintTileElement) {
+            hintTileElement.classList.add('disabled');
+            hintTileElement.disabled = true;
+            selectedParts.push({ part: correctNextPart, tileElement: hintTileElement });
+            updateInputDisplay();
+            if (selectedParts.length === currentWordData.parts.length) {
+                checkWord();
+            } else {
+                isWaiting = false;
+            }
+            return true;
+        }
+        isWaiting = false;
+        return false;
+    }
+
+    function usePaidHint() {
+        playSound(buttonClickSound);
+        if (isWaiting || totalHints <= 0 || !currentWordData || selectedParts.length >= currentWordData.parts.length) {
+             if (totalHints <= 0) showGameMessage("আপনার কোনো ইঙ্গিত নেই। দোকান থেকে কিনুন!", "info");
+             else if (currentWordData && selectedParts.length >= currentWordData.parts.length) showGameMessage("শব্দ ইতিমধ্যে সম্পূর্ণ।", "info");
+             else if (!currentWordData) showGameMessage("এখন কোনো শব্দ নেই।", "info");
+             updateUI();
+             return;
+        }
+        isWaiting = true;
+        if (applyPaidHintLogic()) {
+            totalHints--;
+            showGameMessage("ইঙ্গিত প্রয়োগ করা হলো!", "info");
+        } else {
+            showGameMessage("উপযুক্ত ইঙ্গিত পাওয়া যায়নি!", "info");
+        }
+        updateUI();
+    }
+
+    function openFreeSpinModal() {
+        playSound(buttonClickSound);
+        if (isWaiting || !currentWordData || (currentWordData && selectedParts.length >= currentWordData.parts.length)) {
+            if (!currentWordData) showGameMessage("এখন কোনো শব্দ নেই।", "info");
+            else if (currentWordData && selectedParts.length >= currentWordData.parts.length) showGameMessage("শব্দ ইতিমধ্যে সম্পূর্ণ।", "info");
+            updateUI();
+            return;
+        }
+        if (freeHintUsedThisWord) {
+            showGameMessage("এই শব্দের জন্য ফ্রী স্পিন ইতিমধ্যে ব্যবহার করা হয়েছে।", "info");
+            updateUI();
+            return;
+        }
+
+        alert(`ফ্রী স্পিন পেতে, অনুগ্রহ করে একটি সংক্ষিপ্ত বিজ্ঞাপন দেখুন। বিজ্ঞাপনটি প্রায় ${AD_REQUIRED_VIEW_TIME_MS / 1000} সেকেন্ড দেখতে হবে। এর আগে গেমে ফিরে স্পিন করার চেষ্টা করলে স্পিন হবে না।`);
+
+        isWaiting = true;
+        updateUI(); 
+
+        const adStartTime = localStorage.getItem(AD_START_TIME_KEY);
+
+        if (adStartTime) {
+            const elapsedTime = Date.now() - parseInt(adStartTime, 10);
+            if (elapsedTime >= AD_REQUIRED_VIEW_TIME_MS) {
+                modalSpinActionButton.textContent = '✅ এখন স্পিন করুন!';
+                modalSpinActionButton.classList.add('proceed');
+                modalSpinActionButton.onclick = proceedWithActualSpin;
+                modalSpinActionButton.disabled = false;
+                spinResultMessage.innerHTML = `বিজ্ঞাপন দেখার জন্য ধন্যবাদ! <br><strong>এখন স্পিন করুন</strong> বাটনে চাপ দিয়ে স্পিন শুরু করুন।`;
+            } else {
+                const remainingTime = Math.ceil((AD_REQUIRED_VIEW_TIME_MS - elapsedTime) / 1000);
+                modalSpinActionButton.textContent = '🌀 নতুন করে এড দেখুন';
+                modalSpinActionButton.classList.remove('proceed');
+                modalSpinActionButton.onclick = initiateAdViewForSpin;
+                modalSpinActionButton.disabled = false;
+                spinResultMessage.innerHTML = `আপনাকে বিজ্ঞাপনটি আরও প্রায় ${remainingTime} সেকেন্ড দেখতে হবে। <br>এরপরে গেমে ফিরে "🎁 ফ্রী স্পিন" বাটনে চাপ দিন, অথবা এখনই নতুন করে এড দেখতে পারেন।`;
+            }
+        } else {
+            modalSpinActionButton.textContent = '🌀 এড দেখে স্পিন করুন';
+            modalSpinActionButton.classList.remove('proceed');
+            modalSpinActionButton.onclick = initiateAdViewForSpin;
+            modalSpinActionButton.disabled = false;
+            spinResultMessage.innerHTML = 'ফ্রী স্পিন পেতে, অনুগ্রহ করে একটি সংক্ষিপ্ত বিজ্ঞাপন দেখুন।<br>"এড দেখে স্পিন করুন" বাটনে চাপ দিন।';
+        }
+
+        spinWheelModal.style.display = 'flex';
+        const modalSegments = spinWheelModal.querySelectorAll('.wheel-segment');
+        modalSegments.forEach(seg => seg.classList.remove('highlighted', 'spinning-active'));
+    }
+
+    function initiateAdViewForSpin() {
+        playSound(buttonClickSound);
+        if (modalSpinActionButton.disabled) return;
+        modalSpinActionButton.disabled = true;
+
+        const adURL = 'https://www.profitableratecpm.com/frzvssq75h?key=576ae41d83bfb276b67e431d5ef5cd8e';
+        adWindowObject = window.open(adURL, '_blank');
+
+        if (!adWindowObject || adWindowObject.closed || typeof adWindowObject.closed == 'undefined') {
+            spinResultMessage.innerHTML = `পপ-আপ ব্লক করা হয়েছে। <br>অনুগ্রহ করে আপনার ব্রাউজারে এই সাইটের জন্য পপ-আপ সক্রিয় করুন এবং আবার চেষ্টা করুন।`;
+            modalSpinActionButton.disabled = false; 
+            return;
+        }
+
+        localStorage.setItem(AD_START_TIME_KEY, Date.now().toString());
+        spinWheelModal.style.display = 'none'; 
+        showGameMessage(`বিজ্ঞাপন নতুন ট্যাবে খোলা হয়েছে। অনুগ্রহ করে বিজ্ঞাপনটি প্রায় ${AD_REQUIRED_VIEW_TIME_MS / 1000} সেকেন্ড দেখুন। এর আগে গেমে ফিরে স্পিন করার চেষ্টা করলে স্পিন হবে না। <br>দেখা শেষে এই গেমে ফিরে "🎁 ফ্রী স্পিন" বাটনে চাপ দিন।`, "info");
+        
+        isWaiting = false; 
+        updateUI(); 
+    }
+
+    function buyHints() {
+        playSound(buttonClickSound);
+        if (isWaiting) return;
+        if (score >= HINT_COST) {
+            isWaiting = true;
+            score -= HINT_COST;
+            totalHints += HINTS_PER_PURCHASE;
+            showGameMessage(`আপনি ${HINTS_PER_PURCHASE}টি ইঙ্গিত কিনেছেন!`, "shop");
+            updateUI();
+            setTimeout(() => { isWaiting = false; updateUI(); }, 300);
+        } else {
+            showGameMessage(`ইঙ্গিত কিনতে ${HINT_COST} পয়েন্ট প্রয়োজন।`, "incorrect");
+        }
+    }
+
+    function checkWord() {
+        if (!currentWordData) {
+            isWaiting = false;
+            updateUI();
+            return;
+        }
+
+        const formedWord = selectedParts.map(item => item.part).join('');
+        const isCorrect = formedWord === currentWordData.word;
+
+        if (isCorrect) {
+            playSound(winSound);
+            score += 5;
+            correctAnswersInLevel++;
+            if (currentQuestionIndex !== -1 && !usedWordIndices.includes(currentQuestionIndex)) {
+                usedWordIndices.push(currentQuestionIndex);
+            }
+            showGameMessage("সঠিক! 😊", "correct");
+            
+            gameContainer.classList.add('game-container-victory');
+            setTimeout(() => {
+                gameContainer.classList.remove('game-container-victory');
+            }, 1000); 
+
+            partTiles.forEach(tile => tile.disabled = true);
+            const delay = 1200;
+            if (correctAnswersInLevel >= 3) {
+                setTimeout(levelUp, delay);
+            } else {
+                setTimeout(loadQuestion, delay);
+            }
+        } else {
+            score -= 5;
+            if (score < 0) score = 0;
+            handleGameOver(); // This will now play error sound and show angry emoji
+        }
+        updateUI();
+    }
+
+    function handleGameOver() {
+        playSound(errorSound);
+        showGameMessage("দুঃখিত, ভুল উত্তর! 😠 গেমটি লেভেল ১ থেকে শুরু হচ্ছে। আপনার পয়েন্ট ও ইঙ্গিত সংরক্ষিত আছে।", "incorrect");
+        
+        // Loser effect
+        gameContainer.classList.add('game-container-lose');
+        setTimeout(() => {
+            gameContainer.classList.remove('game-container-lose');
+        }, 1000); // Effect lasts for 1 second
+
+        currentLevel = 1;
+        correctAnswersInLevel = 0;
+        updateUI();
+        setTimeout(() => {
+             isWaiting = false;
+             loadQuestion();
+        }, 3000);
+    }
+
+    function levelUp() {
+        currentLevel++;
+        correctAnswersInLevel = 0;
+        showGameMessage(`দারুণ! লেভেল ${currentLevel}-এ স্বাগতম! 🎉`, "level-up");
+        setTimeout(loadQuestion, 1500);
+    }
+
+    function reloadGame() {
+        playSound(buttonClickSound);
+        if (isWaiting && currentWordData && spinWheelModal.style.display === 'none') {
+            showGameMessage("অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন...", "info");
+            return;
+        }
+        isWaiting = true;
+
+        initializeGameState(); 
+        localStorage.removeItem(AD_START_TIME_KEY); 
+
+        showGameMessage("গেম পুনরায় শুরু হচ্ছে...", "info");
+        jumbledTilesContainer.innerHTML = "";
+        inputDisplay.textContent = "";
+        currentWordData = null;
+        lastPlayedWordObject = null;
+
+        if(adWindowObject && !adWindowObject.closed) {
+            // adWindowObject.close(); 
+        }
+        adWindowObject = null;
+        spinWheelModal.style.display = 'none'; 
+
+        modalSpinActionButton.textContent = '🌀 এড দেখে স্পিন করুন';
+        modalSpinActionButton.classList.remove('proceed');
+        modalSpinActionButton.onclick = initiateAdViewForSpin;
+        modalSpinActionButton.disabled = false;
+
+        setTimeout(() => {
+            isWaiting = false;
+            loadQuestion(); 
+        }, 500);
+    }
+
+    function proceedWithActualSpin() {
+        playSound(buttonClickSound);
+        if (modalSpinActionButton.disabled) return;
+        modalSpinActionButton.disabled = true;
+        modalSpinActionButton.classList.remove('proceed');
+        spinResultMessage.textContent = 'স্পিন হচ্ছে...';
+        localStorage.removeItem(AD_START_TIME_KEY); 
+
+        let spinDuration = 2500;
+        let intervalTime = 80;
+        let cycles = Math.floor(spinDuration / intervalTime);
+        let currentSegmentIdx = 0;
+        let spinCount = 0;
+
+        const modalWheelSegments = spinWheelModal.querySelectorAll('.wheel-segment');
+
+        const spinAnimation = setInterval(() => {
+            modalWheelSegments.forEach(seg => seg.classList.remove('spinning-active'));
+            if (modalWheelSegments.length > 0 && modalWheelSegments[currentSegmentIdx % modalWheelSegments.length]) {
+                 modalWheelSegments[currentSegmentIdx % modalWheelSegments.length].classList.add('spinning-active');
+            }
+            currentSegmentIdx++;
+            spinCount++;
+
+            if (spinCount >= cycles) {
+                clearInterval(spinAnimation);
+                selectFinalPrize(modalWheelSegments);
+            }
+        }, intervalTime);
+    }
+
+    function selectFinalPrize(segmentsToHighlight) {
+        const randomIndex = Math.floor(Math.random() * prizes.length);
+        const wonPrize = prizes[randomIndex];
+
+        segmentsToHighlight.forEach(seg => seg.classList.remove('spinning-active'));
+        if (wonPrize.segmentIndex < segmentsToHighlight.length && segmentsToHighlight[wonPrize.segmentIndex]) {
+             segmentsToHighlight[wonPrize.segmentIndex].classList.add('highlighted');
+        }
+
+        let message = `আপনি জিতেছেন: ${wonPrize.name}!`;
+        let gameMessageType = 'info'; 
+
+        if (wonPrize.type === 'points') {
+            score += wonPrize.value;
+            gameMessageType = 'shop';
+        } else if (wonPrize.type === 'hints') {
+            totalHints += wonPrize.value;
+            gameMessageType = 'info';
+        } else if (wonPrize.type === 'empty') {
+            message = `দুঃখিত, এবার কিছু পাননি। (${wonPrize.nameBangla || wonPrize.name})`;
+            gameMessageType = 'incorrect';
+        }
+
+        spinResultMessage.textContent = message; 
+        showGameMessage(message, gameMessageType); 
+
+        freeHintUsedThisWord = true; 
+
+        setTimeout(() => {
+            spinWheelModal.style.display = 'none';
+            isWaiting = false; 
+            updateUI(); 
+
+            modalSpinActionButton.textContent = '🌀 এড দেখে স্পিন করুন';
+            modalSpinActionButton.classList.remove('proceed');
+            modalSpinActionButton.onclick = initiateAdViewForSpin;
+            modalSpinActionButton.disabled = false;
+
+            if(adWindowObject && !adWindowObject.closed){
+                // adWindowObject.close(); 
+            }
+            adWindowObject = null;
+        }, 2200);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof wordData === 'undefined') {
+            console.error("wordData is not defined. Make sure data.js is loaded before this script or included in the HTML.");
+            window.wordData = [];
+            showGameMessage("শব্দের ডেটা লোড হয়নি। অনুগ্রহ করে পৃষ্ঠাটি রিফ্রেশ করুন।", "incorrect");
+        }
+
+        initializeGameState();
+
+        reloadGameButton.onclick = reloadGame;
+        backspaceButton.onclick = handleBackspace;
+        freeHintButton.onclick = openFreeSpinModal; 
+        hintButton.onclick = usePaidHint;
+        buyHintsButton.onclick = buyHints;
+
+        modalSpinActionButton.onclick = initiateAdViewForSpin; 
+
+        loadQuestion(); 
+    });
+</script>
+</body>
+</html>
