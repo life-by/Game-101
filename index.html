@@ -1,1785 +1,204 @@
- <!DOCTYPE html>
-<html lang="bn">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বাংলা শব্দ সাজানো</title>
-<!-- data.js স্ক্রিপ্ট এখানে বা body-র শেষে যোগ করতে পারেন -->
-<script>
-
-       // --- Word Data ---
-        const wordData = [
-          // --- Level 1 (সাধারণ ও ছোট শব্দ) ---
-          { word: "কলম", parts: ["ক", "ল", "ম"], minLevel: 1 },
-          { word: "বই", parts: ["ব", "ই"], minLevel: 1 },
-          { word: "খাতা", parts: ["খা", "তা"], minLevel: 1 },
-          { word: "জল", parts: ["জ", "ল"], minLevel: 1 },
-          { word: "মাছ", parts: ["মা", "ছ"], minLevel: 1 },
-          { word: "ফল", parts: ["ফ", "ল"], minLevel: 1 },
-          { word: "আম", parts: ["আ", "ম"], minLevel: 1 },
-          { word: "ভাত", parts: ["ভা", "ত"], minLevel: 1 },
-          { word: "ঘর", parts: ["ঘ", "র"], minLevel: 1 },
-          { word: "পথ", parts: ["প", "থ"], minLevel: 1 },
-          { word: "ফুল", parts: ["ফু", "ল"], minLevel: 1 },
-          { word: "পাখি", parts: ["পা", "খি"], minLevel: 1 },
-          { word: "নদী", parts: ["ন", "দী"], minLevel: 1 },
-          { word: "সাপ", parts: ["সা", "প"], minLevel: 1 },
-          { word: "বাবা", parts: ["বা", "বা"], minLevel: 1 },
-          { word: "মা", parts: ["মা"], minLevel: 1 },
-          { word: "ভাই", parts: ["ভা", "ই"], minLevel: 1 },
-          { word: "বোন", parts: ["বো", "ন"], minLevel: 1 },
-          { word: "লাল", parts: ["লা", "ল"], minLevel: 1 },
-          { word: "নীল", parts: ["নী", "ল"], minLevel: 1 },
-          { word: "দিন", parts: ["দি", "ন"], minLevel: 1 },
-          { word: "রাত", parts: ["রা", "ত"], minLevel: 1 },
-          { word: "কান", parts: ["কা", "ন"], minLevel: 1 },
-          { word: "নাক", parts: ["না", "ক"], minLevel: 1 },
-          { word: "চোখ", parts: ["চো", "খ"], minLevel: 1 },
-          { word: "হাত", parts: ["হা", "ত"], minLevel: 1 },
-          { word: "পা", parts: ["পা"], minLevel: 1 },
-          { word: "চুল", parts: ["চু", "ল"], minLevel: 1 },
-          { word: "দেশ", parts: ["দে", "শ"], minLevel: 1 },
-          { word: "নাম", parts: ["না", "ম"], minLevel: 1 },
-          { word: "আলো", parts: ["আ", "লো"], minLevel: 1 },
-          { word: "ছোট", parts: ["ছো", "ট"], minLevel: 1 },
-          { word: "বড়", parts: ["ব", "ড়"], minLevel: 1 },
-          { word: "ভালো", parts: ["ভা", "লো"], minLevel: 1 },
-          { word: "গান", parts: ["গা", "ন"], minLevel: 1 },
-          { word: "ছবি", parts: ["ছ", "বি"], minLevel: 1 },
-          { word: "বল", parts: ["ব", "ল"], minLevel: 1 },
-          { word: "গাছ", parts: ["গা", "ছ"], minLevel: 1 },
-          { word: "রাজা", parts: ["রা", "জা"], minLevel: 1 },
-          { word: "রাণী", parts: ["রা", "ণী"], minLevel: 1 },
-          { word: "টাকা", parts: ["টা", "কা"], minLevel: 1 },
-          { word: "কলা", parts: ["ক", "লা"], minLevel: 1 },
-          { word: "পাতা", parts: ["পা", "তা"], minLevel: 1 },
-          { word: "আগুন", parts: ["আ", "গু", "ন"], minLevel: 1 },
-          { word: "মেঘ", parts: ["মে", "ঘ"], minLevel: 1 },
-          { word: "রং", parts: ["র", "ং"], minLevel: 1 },
-          { word: "শহর", parts: ["শ", "হ", "র"], minLevel: 1 },
-          { word: "গ্রাম", parts: ["গ্রা", "ম"], minLevel: 1 },
-          { word: "ভাষা", parts: ["ভা", "ষা"], minLevel: 1 },
-          { word: "কাজ", parts: ["কা", "জ"], minLevel: 1 },
-          { word: "কালো", parts: ["কা", "লো"], minLevel: 1 },
-          { word: "সাদা", parts: ["সা", "দা"], minLevel: 1 },
-          { word: "সবুজ", parts: ["স", "বু", "জ"], minLevel: 1 },
-          { word: "হলুদ", parts: ["হ", "লু", "দ"], minLevel: 1 },
-          { word: "রাখা", parts: ["রা", "খা"], minLevel: 1 },
-          { word: "লেখা", parts: ["লে", "খা"], minLevel: 1 },
-          { word: "পড়া", parts: ["প", "ড়া"], minLevel: 1 },
-          { word: "বলা", parts: ["ব", "লা"], minLevel: 1 },
-          { word: "শোনা", parts: ["শো", "না"], minLevel: 1 },
-          { word: "দেখা", parts: ["দে", "খা"], minLevel: 1 },
-          { word: "আসা", parts: ["আ", "সা"], minLevel: 1 },
-          { word: "যাওয়া", parts: ["যা", "ও", "য়া"], minLevel: 1 },
-          { word: "খাওয়া", parts: ["খা", "ও", "য়া"], minLevel: 1 },
-          { word: "করা", parts: ["ক", "রা"], minLevel: 1 },
-          { word: "চলা", parts: ["চ", "লা"], minLevel: 1 },
-          { word: "থামা", parts: ["থা", "মা"], minLevel: 1 },
-          { word: "জানা", parts: ["জা", "না"], minLevel: 1 },
-          { word: "বোঝা", parts: ["বো", "ঝা"], minLevel: 1 },
-          { word: "হাসা", parts: ["হা", "সা"], minLevel: 1 },
-          { word: "কাঁদা", parts: ["কাঁ", "দা"], minLevel: 1 },
-          { word: "ওঠা", parts: ["ও", "ঠা"], minLevel: 1 },
-          { word: "বসা", parts: ["ব", "সা"], minLevel: 1 },
-          { word: "শোয়া", parts: ["শো", "য়া"], minLevel: 1 },
-          { word: "ঘুম", parts: ["ঘু", "ম"], minLevel: 1 },
-          { word: "কথা", parts: ["ক", "থা"], minLevel: 1 },
-          { word: "কষ্ট", parts: ["ক", "ষ্ট"], minLevel: 1 },
-          { word: "সুখ", parts: ["সু", "খ"], minLevel: 1 },
-          { word: "মন", parts: ["ম", "ন"], minLevel: 1 },
-          { word: "প্রেম", parts: ["প্রে", "ম"], minLevel: 1 },
-          { word: "ভয়", parts: ["ভ", "য়"], minLevel: 1 },
-          { word: "রাগ", parts: ["রা", "গ"], minLevel: 1 },
-          { word: "লোভ", parts: ["লো", "ভ"], minLevel: 1 },
-          { word: "আশা", parts: ["আ", "শা"], minLevel: 1 },
-          { word: "মাটি", parts: ["মা", "টি"], minLevel: 1 },
-          { word: "পাথর", parts: ["পা", "থ", "র"], minLevel: 1 },
-          { word: "ইট", parts: ["ই", "ট"], minLevel: 1 },
-          { word: "কাঠ", parts: ["কা", "ঠ"], minLevel: 1 },
-          { word: "বাঁশ", parts: ["বাঁ", "শ"], minLevel: 1 },
-          { word: "সোনা", parts: ["সো", "না"], minLevel: 1 },
-          { word: "রূপা", parts: ["রূ", "পা"], minLevel: 1 },
-          { word: "লোহা", parts: ["লো", "হা"], minLevel: 1 },
-          { word: "কাপ", parts: ["কা", "প"], minLevel: 1 },
-          { word: "গ্লাস", parts: ["গ্লা", "স"], minLevel: 1 },
-          { word: "থালা", parts: ["থা", "লা"], minLevel: 1 },
-          { word: "বাটি", parts: ["বা", "টি"], minLevel: 1 },
-          { word: "চাবি", parts: ["চা", "বি"], minLevel: 1 },
-          { word: "তালা", parts: ["তা", "লা"], minLevel: 1 },
-          { word: "মোম", parts: ["মো", "ম"], minLevel: 1 },
-          { word: "সূর্য", parts: ["সূ", "র্য"], minLevel: 1 },
-          { word: "চাঁদ", parts: ["চাঁ", "দ"], minLevel: 1 },
-          { word: "তারা", parts: ["তা", "রা"], minLevel: 1 },
-          { word: "গ্রহ", parts: ["গ্র", "হ"], minLevel: 1 },
-          { word: "অজানা", parts: ["অ", "জা", "না"], minLevel: 1 },
-          { word: "অচেনা", parts: ["অ", "চে", "না"], minLevel: 1 },
-          { word: "অবাক", parts: ["অ", "বা", "ক"], minLevel: 1 },
-          { word: "অনেক", parts: ["অ", "নে", "ক"], minLevel: 1 },
-          { word: "অন্য", parts: ["অ", "ন্য"], minLevel: 1 },
-          { word: "অল্প", parts: ["অ", "ল্প"], minLevel: 1 },
-          { word: "আস্তে", parts: ["আ", "স্তে"], minLevel: 1 },
-          { word: "আসল", parts: ["আ", "স", "ল"], minLevel: 1 },
-          { word: "আলাদা", parts: ["আ", "লা", "দা"], minLevel: 1 },
-          { word: "ইচ্ছা", parts: ["ই", "চ্ছা"], minLevel: 1 },
-          { word: "উপর", parts: ["উ", "প", "র"], minLevel: 1 },
-          { word: "এখন", parts: ["এ", "খ", "ন"], minLevel: 1 },
-          { word: "তখন", parts: ["ত", "খ", "ন"], minLevel: 1 },
-          { word: "যখন", parts: ["য", "খ", "ন"], minLevel: 1 },
-          { word: "কখন", parts: ["ক", "খ", "ন"], minLevel: 1 },
-          { word: "এখানে", parts: ["এ", "খা", "নে"], minLevel: 1 },
-          { word: "ওখানে", parts: ["ও", "খা", "নে"], minLevel: 1 },
-          { word: "সেখানে", parts: ["সে", "খা", "নে"], minLevel: 1 },
-          { word: "যেখানে", parts: ["যে", "খা", "নে"], minLevel: 1 },
-          { word: "কোথায়", parts: ["কো", "থা", "য়"], minLevel: 1 },
-          { word: "কারণ", parts: ["কা", "র", "ণ"], minLevel: 1 },
-          { word: "জন্য", parts: ["জ", "ন্য"], minLevel: 1 },
-          { word: "কিন্তু", parts: ["কি", "ন্তু"], minLevel: 1 },
-          { word: "অথবা", parts: ["অ", "থ", "বা"], minLevel: 1 },
-          { word: "এবং", parts: ["এ", "বং"], minLevel: 1 },
-          { word: "ও", parts: ["ও"], minLevel: 1 },
-          { word: "আর", parts: ["আ", "র"], minLevel: 1 },
-          { word: "থেকে", parts: ["থে", "কে"], minLevel: 1 },
-          { word: "সাথে", parts: ["সা", "থে"], minLevel: 1 },
-          { word: "মধ্যে", parts: ["ম", "ধ্যে"], minLevel: 1 },
-          { word: "বাইরে", parts: ["বা", "ই", "রে"], minLevel: 1 },
-          { word: "ভিতরে", parts: ["ভি", "ত", "রে"], minLevel: 1 },
-          { word: "সামনে", parts: ["সা", "ম", "নে"], minLevel: 1 },
-          { word: "পিছনে", parts: ["পি", "ছ", "নে"], minLevel: 1 },
-          { word: "ডানে", parts: ["ডা", "নে"], minLevel: 1 },
-          { word: "বামে", parts: ["বা", "মে"], minLevel: 1 },
-          { word: "তাহলে", parts: ["তা", "হ", "লে"], minLevel: 1 },
-          { word: "হয়তো", parts: ["হ", "য়", "তো"], minLevel: 1 },
-          { word: "অবশ্যই", parts: ["অ", "ব", "শ্য", "ই"], minLevel: 1 },
-          { word: "আবার", parts: ["আ", "বা", "র"], minLevel: 1 },
-          { word: "প্রায়", parts: ["প্রা", "য়"], minLevel: 1 },
-          { word: "কিছু", parts: ["কি", "ছু"], minLevel: 1 },
-          { word: "সব", parts: ["স", "ব"], minLevel: 1 },
-          { word: "কেউ", parts: ["কে", "উ"], minLevel: 1 },
-          { word: "নিজের", parts: ["নি", "জে", "র"], minLevel: 1 },
-          { word: "পর্যন্ত", parts: ["প", "র্য", "ন্ত"], minLevel: 1 },
-          { word: "হঠাৎ", parts: ["হ", "ঠা", "ৎ"], minLevel: 1 },
-          { word: "আসলে", parts: ["আ", "স", "লে"], minLevel: 1 },
-          { word: "বোকা", parts: ["বো", "কা"], minLevel: 1 },
-          { word: "অলস", parts: ["অ", "ল", "স"], minLevel: 1 },
-          { word: "রোগা", parts: ["রো", "গা"], minLevel: 1 },
-          { word: "লম্বা", parts: ["ল", "ম্বা"], minLevel: 1 },
-          { word: "খাটো", parts: ["খা", "টো"], minLevel: 1 },
-          { word: "মোটা", parts: ["মো", "টা"], minLevel: 1 },
-          { word: "চিকন", parts: ["চি", "ক", "ন"], minLevel: 1 },
-          { word: "গরম", parts: ["গ", "র", "ম"], minLevel: 1 },
-          { word: "ঠান্ডা", parts: ["ঠা", "ন্ডা"], minLevel: 1 },
-          { word: "হালকা", parts: ["হা", "ল", "কা"], minLevel: 1 },
-          { word: "ভারী", parts: ["ভা", "রী"], minLevel: 1 },
-          { word: "নরম", parts: ["ন", "র", "ম"], minLevel: 1 },
-          { word: "শক্ত", parts: ["শ", "ক্ত"], minLevel: 1 },
-          { word: "মিষ্টি", parts: ["মি", "ষ্টি"], minLevel: 1 },
-          { word: "টক", parts: ["ট", "ক"], minLevel: 1 },
-          { word: "ঝাল", parts: ["ঝা", "ল"], minLevel: 1 },
-          { word: "নোনতা", parts: ["নো", "ন", "তা"], minLevel: 1 },
-          { word: "সহজ", parts: ["স", "হ", "জ"], minLevel: 1 },
-          { word: "কঠিন", parts: ["ক", "ঠি", "ন"], minLevel: 1 },
-          { word: "ধীরে", parts: ["ধী", "রে"], minLevel: 1 },
-          { word: "কাছে", parts: ["কা", "ছে"], minLevel: 1 },
-          { word: "দূরে", parts: ["দূ", "রে"], minLevel: 1 },
-          { word: "আজ", parts: ["আ", "জ"], minLevel: 1 },
-          { word: "কাল", parts: ["কা", "ল"], minLevel: 1 },
-          { word: "ভুল", parts: ["ভু", "ল"], minLevel: 1 },
-          { word: "সঠিক", parts: ["স", "ঠি", "ক"], minLevel: 1 },
-          { word: "দোষ", parts: ["দো", "ষ"], minLevel: 1 },
-          { word: "গুণ", parts: ["গু", "ণ"], minLevel: 1 },
-          { word: "মিল", parts: ["মি", "ল"], minLevel: 1 },
-          { word: "শুরু", parts: ["শু", "রু"], minLevel: 1 },
-          { word: "শেষ", parts: ["শে", "ষ"], minLevel: 1 },
-          { word: "চিনি", parts: ["চি", "নি"], minLevel: 1 },
-          { word: "লবণ", parts: ["ল", "ব", "ণ"], minLevel: 1 },
-          { word: "দুধ", parts: ["দু", "ধ"], minLevel: 1 },
-          { word: "ডিম", parts: ["ডি", "ম"], minLevel: 1 },
-          { word: "তেল", parts: ["তে", "ল"], minLevel: 1 },
-          { word: "লেবু", parts: ["লে", "বু"], minLevel: 1 },
-
-          // --- Level 2 (মাঝারি শব্দ, পরিচিত) ---
-          { word: "আলমারি", parts: ["আ", "ল", "মা", "রি"], minLevel: 2 },
-          { word: "টেবিল", parts: ["টে", "বি", "ল"], minLevel: 2 },
-          { word: "চেয়ার", parts: ["চে", "য়া", "র"], minLevel: 2 },
-          { word: "বিছানা", parts: ["বি", "ছা", "না"], minLevel: 2 },
-          { word: "দরজা", parts: ["দ", "র", "জা"], minLevel: 2 },
-          { word: "জানালা", parts: ["জা", "না", "লা"], minLevel: 2 },
-          { word: "দেয়াল", parts: ["দে", "য়া", "ল"], minLevel: 2 },
-          { word: "বারান্দা", parts: ["বা", "রা", "ন্দা"], minLevel: 2 },
-          { word: "রান্নাঘর", parts: ["রা", "ন্না", "ঘ", "র"], minLevel: 2 },
-          { word: "বাথরুম", parts: ["বা", "থ", "রু", "ম"], minLevel: 2 },
-          { word: "কাপড়", parts: ["কা", "প", "ড়"], minLevel: 2 },
-          { word: "গয়না", parts: ["গ", "য়", "না"], minLevel: 2 },
-          { word: "চশমা", parts: ["চ", "শ", "মা"], minLevel: 2 },
-          { word: "ঘড়ি", parts: ["ঘ", "ড়ি"], minLevel: 2 },
-          { word: "আয়না", parts: ["আ", "য়", "না"], minLevel: 2 },
-          { word: "চিরুনি", parts: ["চি", "রু", "নি"], minLevel: 2 },
-          { word: "সাবান", parts: ["সা", "বা", "ন"], minLevel: 2 },
-          { word: "তোয়ালে", parts: ["তো", "য়া", "লে"], minLevel: 2 },
-          { word: "বিড়াল", parts: ["বি", "ড়া", "ল"], minLevel: 2 },
-          { word: "কুকুর", parts: ["কু", "কু", "র"], minLevel: 2 },
-          { word: "গরু", parts: ["গ", "রু"], minLevel: 2 },
-          { word: "ছাগল", parts: ["ছা", "গ", "ল"], minLevel: 2 },
-          { word: "হাঁস", parts: ["হাঁ", "স"], minLevel: 2 },
-          { word: "মুরগি", parts: ["মু", "র", "গি"], minLevel: 2 },
-          { word: "কবুতর", parts: ["ক", "বু", "ত", "র"], minLevel: 2 },
-          { word: "মানুষ", parts: ["মা", "নু", "ষ"], minLevel: 2 },
-          { word: "ছেলে", parts: ["ছে", "লে"], minLevel: 2 },
-          { word: "মেয়ে", parts: ["মে", "য়ে"], minLevel: 2 },
-          { word: "শিশু", parts: ["শি", "শু"], minLevel: 2 },
-          { word: "শিক্ষক", parts: ["শি", "ক্ষ", "ক"], minLevel: 2 },
-          { word: "ছাত্র", parts: ["ছা", "ত্র"], minLevel: 2 },
-          { word: "বন্ধু", parts: ["ব", "ন্ধু"], minLevel: 2 },
-          { word: "আত্মীয়", parts: ["আ", "ত্মী", "য়"], minLevel: 2 },
-          { word: "প্রতিবেশী", parts: ["প্র", "তি", "বে", "শী"], minLevel: 2 },
-          { word: "দোকানদার", parts: ["দো", "কা", "ন", "দা", "র"], minLevel: 2 },
-          { word: "ক্রেতা", parts: ["ক্রে", "তা"], minLevel: 2 },
-          { word: "বিক্রেতা", parts: ["বি", "ক্রে", "তা"], minLevel: 2 },
-          { word: "ডাক্তার", parts: ["ডা", "ক্তা", "র"], minLevel: 2 },
-          { word: "উকিল", parts: ["উ", "কি", "ল"], minLevel: 2 },
-          { word: "পুলিশ", parts: ["পু", "লি", "শ"], minLevel: 2 },
-          { word: "চাষী", parts: ["চা", "ষী"], minLevel: 2 },
-          { word: "জেলে", parts: ["জে", "লে"], minLevel: 2 },
-          { word: "কামার", parts: ["কা", "মা", "র"], minLevel: 2 },
-          { word: "কুমার", parts: ["কু", "মা", "র"], minLevel: 2 },
-          { word: "তাঁতি", parts: ["তাঁ", "তি"], minLevel: 2 },
-          { word: "বাজার", parts: ["বা", "জা", "র"], minLevel: 2 },
-          { word: "দোকান", parts: ["দো", "কা", "ন"], minLevel: 2 },
-          { word: "রাস্তা", parts: ["রা", "স্তা"], minLevel: 2 },
-          { word: "গাড়ি", parts: ["গা", "ড়ি"], minLevel: 2 },
-          { word: "রিকশা", parts: ["রি", "ক", "শা"], minLevel: 2 },
-          { word: "সাইকেল", parts: ["সা", "ই", "কে", "ল"], minLevel: 2 },
-          { word: "বিমান", parts: ["বি", "মা", "ন"], minLevel: 2 },
-          { word: "জাহাজ", parts: ["জা", "হা", "জ"], minLevel: 2 },
-          { word: "নৌকা", parts: ["নৌ", "কা"], minLevel: 2 },
-          { word: "ট্রেন", parts: ["ট্রে", "ন"], minLevel: 2 },
-          { word: "স্টেশন", parts: ["স্টে", "শ", "ন"], minLevel: 2 },
-          { word: "অফিস", parts: ["অ", "ফি", "স"], minLevel: 2 },
-          { word: "কারখানা", parts: ["কা", "র", "খা", "না"], minLevel: 2 },
-          { word: "খাবার", parts: ["খা", "বা", "র"], minLevel: 2 },
-          { word: "সকাল", parts: ["স", "কা", "ল"], minLevel: 2 },
-          { word: "দুপুর", parts: ["দু", "পু", "র"], minLevel: 2 },
-          { word: "বিকাল", parts: ["বি", "কা", "ল"], minLevel: 2 },
-          { word: "সন্ধ্যা", parts: ["স", "ন্ধ্যা"], minLevel: 2 },
-          { word: "আকাশ", parts: ["আ", "কা", "শ"], minLevel: 2 },
-          { word: "বাতাস", parts: ["বা", "তা", "স"], minLevel: 2 },
-          { word: "বৃষ্টি", parts: ["বৃ", "ষ্টি"], minLevel: 2 },
-          { word: "রোদ", parts: ["রো", "দ"], minLevel: 2 },
-          { word: "পৃথিবী", parts: ["পৃ", "থি", "বী"], minLevel: 2 },
-          { word: "সমুদ্র", parts: ["স", "মু", "দ্র"], minLevel: 2 },
-          { word: "পাহাড়", parts: ["পা", "হা", "ড়"], minLevel: 2 },
-          { word: "জঙ্গল", parts: ["জ", "ঙ্গ", "ল"], minLevel: 2 },
-          { word: "বাগান", parts: ["বা", "গা", "ন"], minLevel: 2 },
-          { word: "মাঠ", parts: ["মা", "ঠ"], minLevel: 2 },
-          { word: "পুকুর", parts: ["পু", "কু", "র"], minLevel: 2 },
-          { word: "কমলা", parts: ["ক", "ম", "লা"], minLevel: 2 },
-          { word: "আপেল", parts: ["আ", "পে", "ল"], minLevel: 2 },
-          { word: "পেঁপে", parts: ["পেঁ", "পে"], minLevel: 2 },
-          { word: "আনারস", parts: ["আ", "না", "র", "স"], minLevel: 2 },
-          { word: "তরমুজ", parts: ["ত", "র", "মু", "জ"], minLevel: 2 },
-          { word: "লিচু", parts: ["লি", "চু"], minLevel: 2 },
-          { word: "পেয়ারা", parts: ["পে", "য়া", "রা"], minLevel: 2 },
-          { word: "আলু", parts: ["আ", "লু"], minLevel: 2 },
-          { word: "বেগুন", parts: ["বে", "গু", "ন"], minLevel: 2 },
-          { word: "পেঁয়াজ", parts: ["পেঁ", "য়া", "জ"], minLevel: 2 },
-          { word: "রসুন", parts: ["র", "সু", "ন"], minLevel: 2 },
-          { word: "আদা", parts: ["আ", "দা"], minLevel: 2 },
-          { word: "মরিচ", parts: ["ম", "রি", "চ"], minLevel: 2 },
-          { word: "সবজি", parts: ["স", "ব", "জি"], minLevel: 2 },
-          { word: "মসলা", parts: ["ম", "স", "লা"], minLevel: 2 },
-          { word: "চিঠি", parts: ["চি", "ঠি"], minLevel: 2 },
-          { word: "খবর", parts: ["খ", "ব", "র"], minLevel: 2 },
-          { word: "কাগজ", parts: ["কা", "গ", "জ"], minLevel: 2 },
-          { word: "লেখক", parts: ["লে", "খ", "ক"], minLevel: 2 },
-          { word: "কবি", parts: ["ক", "বি"], minLevel: 2 },
-          { word: "গল্প", parts: ["গ", "ল্প"], minLevel: 2 },
-          { word: "কবিতা", parts: ["ক", "বি", "তা"], minLevel: 2 },
-          { word: "উপন্যাস", parts: ["উ", "প", "ন্যা", "স"], minLevel: 2 },
-          { word: "নাটক", parts: ["না", "ট", "ক"], minLevel: 2 },
-          { word: "সিনেমা", parts: ["সি", "নে", "মা"], minLevel: 2 },
-          { word: "সুন্দর", parts: ["সু", "ন্দ", "র"], minLevel: 2 },
-          { word: "অন্ধকার", parts: ["অ", "ন্ধ", "কা", "র"], minLevel: 2 },
-          { word: "আলোচনা", parts: ["আ", "লো", "চ", "না"], minLevel: 2 },
-          { word: "বিদ্যালয়", parts: ["বি", "দ্যা", "ল", "য়"], minLevel: 2 },
-          { word: "পড়ালেখা", parts: ["প", "ড়া", "লে", "খা"], minLevel: 2 },
-          { word: "পরীক্ষা", parts: ["প", "রী", "ক্ষা"], minLevel: 2 },
-          { word: "ফলাফল", parts: ["ফ", "লা", "ফ", "ল"], minLevel: 2 },
-          { word: "হাসপাতাল", parts: ["হা", "স", "পা", "তা", "ল"], minLevel: 2 },
-          { word: "ঔষধ", parts: ["ঔ", "ষ", "ধ"], minLevel: 2 },
-          { word: "অসুস্থ", parts: ["অ", "সু", "স্থ"], minLevel: 2 },
-          { word: "স্বাস্থ্য", parts: ["স্বা", "স্থ্য"], minLevel: 2 },
-          { word: "পরিষ্কার", parts: ["প", "রি", "ষ্কা", "র"], minLevel: 2 },
-          { word: "আবর্জনা", parts: ["আ", "ব", "র্জ", "না"], minLevel: 2 },
-          { word: "পরিবেশ", parts: ["প", "রি", "বে", "শ"], minLevel: 2 },
-          { word: "প্রকৃতি", parts: ["প্র", "কৃ", "তি"], minLevel: 2 },
-          { word: "আনন্দ", parts: ["আ", "ন", "ন্দ"], minLevel: 2 },
-          { word: "উৎসব", parts: ["উ", "ৎস", "ব"], minLevel: 2 },
-          { word: "অনুষ্ঠান", parts: ["অ", "নু", "ষ্ঠা", "ন"], minLevel: 2 },
-          { word: "বিবাহ", parts: ["বি", "বা", "হ"], minLevel: 2 },
-          { word: "জন্মদিন", parts: ["জ", "ন্ম", "দি", "ন"], minLevel: 2 },
-          { word: "খেলাধুলা", parts: ["খে", "লা", "ধু", "লা"], minLevel: 2 },
-          { word: "ক্রিকেট", parts: ["ক্রি", "কে", "ট"], minLevel: 2 },
-          { word: "ফুটবল", parts: ["ফু", "ট", "ব", "ল"], minLevel: 2 },
-          { word: "সংখ্যা", parts: ["সং", "খ্যা"], minLevel: 2 },
-          { word: "সময়", parts: ["স", "ম", "য়"], minLevel: 2 },
-          { word: "ভবিষ্যৎ", parts: ["ভ", "বি", "ষ্য", "ৎ"], minLevel: 2 },
-          { word: "বর্তমান", parts: ["ব", "র্ত", "মা", "ন"], minLevel: 2 },
-          { word: "অতীত", parts: ["অ", "তী", "ত"], minLevel: 2 },
-          { word: "শরীর", parts: ["শ", "রী", "র"], minLevel: 2 },
-          { word: "প্রশ্ন", parts: ["প্র", "শ্ন"], minLevel: 2 },
-          { word: "উত্তর", parts: ["উ", "ত্ত", "র"], minLevel: 2 },
-          { word: "শব্দ", parts: ["শ", "ব্দ"], minLevel: 2 },
-          { word: "বাক্য", parts: ["বা", "ক্য"], minLevel: 2 },
-          { word: "শিক্ষা", parts: ["শি", "ক্ষা"], minLevel: 2 },
-          { word: "হাতি", parts: ["হা", "তি"], minLevel: 2 },
-          { word: "ঘোড়া", parts: ["ঘো", "ড়া"], minLevel: 2 },
-          { word: "বাঘ", parts: ["বা", "ঘ"], minLevel: 2 },
-          { word: "সিংহ", parts: ["সিং", "হ"], minLevel: 2 },
-          { word: "ভালুক", parts: ["ভা", "লু", "ক"], minLevel: 2 },
-          { word: "হরিণ", parts: ["হ", "রি", "ণ"], minLevel: 2 },
-          { word: "শিয়াল", parts: ["শি", "য়া", "ল"], minLevel: 2 },
-          { word: "টিকটিকি", parts: ["টি", "ক", "টি", "কি"], minLevel: 2 },
-          { word: "মশা", parts: ["ম", "শা"], minLevel: 2 },
-          { word: "মাছি", parts: ["মা", "ছি"], minLevel: 2 },
-          { word: "মৌমাছি", parts: ["মৌ", "মা", "ছি"], minLevel: 2 },
-          { word: "পিপীলিকা", parts: ["পি", "পী", "লি", "কা"], minLevel: 2 },
-          { word: "তেলাপোকা", parts: ["তে", "লা", "পো", "কা"], minLevel: 2 },
-          { word: "প্রজাপতি", parts: ["প্র", "জা", "প", "তি"], minLevel: 2 },
-          { word: "ফড়িং", parts: ["ফ", "ড়ি", "ং"], minLevel: 2 },
-          { word: "শামুক", parts: ["শা", "মু", "ক"], minLevel: 2 },
-          { word: "কেঁচো", parts: ["কেঁ", "চো"], minLevel: 2 },
-          { word: "ব্যাঙ", parts: ["ব্যা", "ঙ"], minLevel: 2 },
-          { word: "কুমির", parts: ["কু", "মি", "র"], minLevel: 2 },
-          { word: "কচ্ছপ", parts: ["ক", "চ্ছ", "প"], minLevel: 2 },
-          { word: "কাঁকড়া", parts: ["কাঁ", "ক", "ড়া"], minLevel: 2 },
-          { word: "চিংড়ি", parts: ["চিং", "ড়ি"], minLevel: 2 },
-          { word: "ইলিশ", parts: ["ই", "লি", "শ"], minLevel: 2 },
-          { word: "রুই", parts: ["রু", "ই"], minLevel: 2 },
-          { word: "কাতলা", parts: ["কা", "ত", "লা"], minLevel: 2 },
-          { word: "পায়রা", parts: ["পা", "য়", "রা"], minLevel: 2 },
-          { word: "টিয়া", parts: ["টি", "য়া"], minLevel: 2 },
-          { word: "ময়না", parts: ["ম", "য়", "না"], minLevel: 2 },
-          { word: "শালিক", parts: ["শা", "লি", "ক"], minLevel: 2 },
-          { word: "কাক", parts: ["কা", "ক"], minLevel: 2 },
-          { word: "কোকিল", parts: ["কো", "কি", "ল"], minLevel: 2 },
-          { word: "চড়ুই", parts: ["চ", "ড়ু", "ই"], minLevel: 2 },
-          { word: "ইগল", parts: ["ই", "গ", "ল"], minLevel: 2 },
-          { word: "শকুন", parts: ["শ", "কু", "ন"], minLevel: 2 },
-          { word: "পেঁচা", parts: ["পেঁ", "চা"], minLevel: 2 },
-          { word: "বাদুড়", parts: ["বা", "দু", "ড়"], minLevel: 2 },
-          { word: "কাঠবিড়ালী", parts: ["কা", "ঠ", "বি", "ড়া", "লী"], minLevel: 2 },
-          { word: "বানর", parts: ["বা", "ন", "র"], minLevel: 2 },
-          { word: "জিরাফ", parts: ["জি", "রা", "ফ"], minLevel: 2 },
-          { word: "জেব্রা", parts: ["জে", "ব্রা"], minLevel: 2 },
-          { word: "সপ্তাহ", parts: ["স", "প্তা", "হ"], minLevel: 2 },
-          { word: "মাস", parts: ["মা", "স"], minLevel: 2 },
-          { word: "বছর", parts: ["ব", "ছ", "র"], minLevel: 2 },
-          { word: "শনিবার", parts: ["শ", "নি", "বা", "র"], minLevel: 2 },
-          { word: "রবিবার", parts: ["র", "বি", "বা", "র"], minLevel: 2 },
-          { word: "সোমবার", parts: ["সো", "ম", "বা", "র"], minLevel: 2 },
-          { word: "মঙ্গলবার", parts: ["ম", "ঙ্গ", "ল", "বা", "র"], minLevel: 2 },
-          { word: "বুধবার", parts: ["বু", "ধ", "বা", "র"], minLevel: 2 },
-          { word: "সরকার", parts: ["স", "র", "কা", "র"], minLevel: 2 },
-          { word: "আইন", parts: ["আ", "ই", "ন"], minLevel: 2 },
-          { word: "বিচার", parts: ["বি", "চা", "র"], minLevel: 2 },
-          { word: "শাস্তি", parts: ["শা", "স্তি"], minLevel: 2 },
-          { word: "অপরাধ", parts: ["অ", "প", "রা", "ধ"], minLevel: 2 },
-          { word: "শান্তি", parts: ["শা", "ন্তি"], minLevel: 2 },
-          { word: "যুদ্ধ", parts: ["যু", "দ্ধ"], minLevel: 2 },
-          { word: "সৈন্য", parts: ["সৈ", "ন্য"], minLevel: 2 },
-          { word: "অস্ত্র", parts: ["অ", "স্ত্র"], minLevel: 2 },
-          { word: "পতাকা", parts: ["প", "তা", "কা"], minLevel: 2 },
-          { word: "জাতি", parts: ["জা", "তি"], minLevel: 2 },
-          { word: "ধর্ম", parts: ["ধ", "র্ম"], minLevel: 2 },
-          { word: "বিশ্বাস", parts: ["বি", "শ্বা", "স"], minLevel: 2 },
-          { word: "প্রার্থনা", parts: ["প্রা", "র্থ", "না"], minLevel: 2 },
-          { word: "মন্দির", parts: ["ম", "ন্দি", "র"], minLevel: 2 },
-          { word: "মসজিদ", parts: ["ম", "স", "জি", "দ"], minLevel: 2 },
-          { word: "গীর্জা", parts: ["গী", "র্জা"], minLevel: 2 },
-          { word: "প্যাগোডা", parts: ["প্যা", "গো", "ডা"], minLevel: 2 },
-          { word: "বিজ্ঞান", parts: ["বি", "জ্ঞা", "ন"], minLevel: 2 },
-          { word: "গণিত", parts: ["গ", "ণি", "ত"], minLevel: 2 },
-          { word: "ইতিহাস", parts: ["ই", "তি", "হা", "স"], minLevel: 2 },
-          { word: "ভূগোল", parts: ["ভূ", "গো", "ল"], minLevel: 2 },
-          { word: "নাগরিক", parts: ["না", "গ", "রি", "ক"], minLevel: 2 },
-          { word: "দুনিয়া", parts: ["দু", "নি", "য়া"], minLevel: 2 },
-          { word: "অঞ্চল", parts: ["অ", "ঞ্চ", "ল"], minLevel: 2 },
-          { word: "রাজধানী", parts: ["রা", "জ", "ধা", "নী"], minLevel: 2 },
-          { word: "বন্দর", parts: ["ব", "ন্দ", "র"], minLevel: 2 },
-          { word: "সীমান্ত", parts: ["সী", "মা", "ন্ত"], minLevel: 2 },
-          { word: "ব্যাপার", parts: ["ব্যা", "পা", "র"], minLevel: 2 },
-          { word: "সমস্যা", parts: ["স", "ম", "স্যা"], minLevel: 2 },
-          { word: "সমাধান", parts: ["স", "মা", "ধা", "ন"], minLevel: 2 },
-          { word: "সাহায্য", parts: ["সা", "হা", "য্য"], minLevel: 2 },
-          { word: "পরামর্শ", parts: ["প", "রা", "ম", "র্শ"], minLevel: 2 },
-          { word: "উপদেশ", parts: ["উ", "প", "দে", "শ"], minLevel: 2 },
-          { word: "নির্দেশ", parts: ["নি", "র্দে", "শ"], minLevel: 2 },
-          { word: "অনুরোধ", parts: ["অ", "নু", "রো", "ধ"], minLevel: 2 },
-          { word: "আদেশ", parts: ["আ", "দে", "শ"], minLevel: 2 },
-          { word: "ক্ষমা", parts: ["ক্ষ", "মা"], minLevel: 2 },
-          { word: "ধন্যবাদ", parts: ["ধ", "ন্য", "বা", "দ"], minLevel: 2 },
-          { word: "দুঃখিত", parts: ["দুঃ", "খি", "ত"], minLevel: 2 },
-          { word: "স্বাগতম", parts: ["স্বা", "গ", "ত", "ম"], minLevel: 2 },
-          { word: "বিদায়", parts: ["বি", "দা", "য়"], minLevel: 2 },
-          { word: "অবসর", parts: ["অ", "ব", "স", "র"], minLevel: 2 },
-          { word: "ছুটি", parts: ["ছু", "টি"], minLevel: 2 },
-          { word: "বেতন", parts: ["বে", "ত", "ন"], minLevel: 2 },
-          { word: "চাকরি", parts: ["চা", "ক", "রি"], minLevel: 2 },
-          { word: "ব্যবসা", parts: ["ব্য", "ব", "সা"], minLevel: 2 },
-          { word: "লাভ", parts: ["লা", "ভ"], minLevel: 2 },
-          { word: "ক্ষতি", parts: ["ক্ষ", "তি"], minLevel: 2 },
-          { word: "আয়", parts: ["আ", "য়"], minLevel: 2 },
-          { word: "ব্যয়", parts: ["ব্য", "য়"], minLevel: 2 },
-          { word: "সঞ্চয়", parts: ["স", "ঞ্চ", "য়"], minLevel: 2 },
-          { word: "ঋণ", parts: ["ঋ", "ণ"], minLevel: 2 },
-          { word: "বাজেট", parts: ["বা", "জে", "ট"], minLevel: 2 },
-          { word: "পরিকল্পনা", parts: ["প", "রি", "ক", "ল্প", "না"], minLevel: 2 },
-          { word: "উন্নয়ন", parts: ["উ", "ন্ন", "য়", "ন"], minLevel: 2 },
-          { word: "অগ্রগতি", parts: ["অ", "গ্র", "গ", "তি"], minLevel: 2 },
-          { word: "পরিবর্তন", parts: ["প", "রি", "ব", "র্ত", "ন"], minLevel: 2 },
-          { word: "বৃদ্ধি", parts: ["বৃ", "দ্ধি"], minLevel: 2 },
-          { word: "প্রয়োজন", parts: ["প্র", "য়ো", "জ", "ন"], minLevel: 2 },
-          { word: "দরকার", parts: ["দ", "র", "কা", "র"], minLevel: 2 },
-          { word: "অভাব", parts: ["অ", "ভা", "ব"], minLevel: 2 },
-          { word: "পর্যাপ্ত", parts: ["প", "র্যা", "প্ত"], minLevel: 2 },
-          { word: "অতিরিক্ত", parts: ["অ", "তি", "রি", "ক্ত"], minLevel: 2 },
-          { word: "সাধারণ", parts: ["সা", "ধা", "র", "ণ"], minLevel: 2 },
-          { word: "বিশেষ", parts: ["বি", "শে", "ষ"], minLevel: 2 },
-          { word: "ব্যক্তিগত", parts: ["ব্য", "ক্তি", "গ", "ত"], minLevel: 2 },
-          { word: "সরকারি", parts: ["স", "র", "কা", "রি"], minLevel: 2 },
-          { word: "বেসরকারি", parts: ["বে", "স", "র", "কা", "রি"], minLevel: 2 },
-          { word: "দুর্বল", parts: ["দু", "র্ব", "ল"], minLevel: 2 },
-          { word: "সাহসী", parts: ["সা", "হ", "সী"], minLevel: 2 },
-          { word: "ভীতু", parts: ["ভী", "তু"], minLevel: 2 },
-          { word: "সৎ", parts: ["স", "ৎ"], minLevel: 2 },
-          { word: "অসৎ", parts: ["অ", "স", "ৎ"], minLevel: 2 },
-          { word: "ধনী", parts: ["ধ", "নী"], minLevel: 2 },
-          { word: "গরীব", parts: ["গ", "রী", "ব"], minLevel: 2 },
-          { word: "তিক্ত", parts: ["তি", "ক্ত"], minLevel: 2 },
-          { word: "দ্রুত", parts: ["দ্রু", "ত"], minLevel: 2 },
-          { word: "গতকাল", parts: ["গ", "ত", "কা", "ল"], minLevel: 2 },
-          { word: "অবকাশ", parts: ["অ", "ব", "কা", "শ"], minLevel: 2 },
-          { word: "ভ্রমণ", parts: ["ভ্র", "ম", "ণ"], minLevel: 2 },
-          { word: "অভিযান", parts: ["অ", "ভি", "যা", "ন"], minLevel: 2 },
-          { word: "অনুভূতি", parts: ["অ", "নু", "ভূ", "তি"], minLevel: 2 },
-          { word: "স্মৃতি", parts: ["স্মৃ", "তি"], minLevel: 2 },
-          { word: "স্বপ্ন", parts: ["স্ব", "প্ন"], minLevel: 2 },
-          { word: "বাস্তবতা", parts: ["বা", "স্ত", "ব", "তা"], minLevel: 2 },
-          { word: "কল্পনা", parts: ["ক", "ল্প", "না"], minLevel: 2 },
-          { word: "অধ্যায়", parts: ["অ", "ধ্যা", "য়"], minLevel: 2 },
-          { word: "বিষয়", parts: ["বি", "ষ", "য়"], minLevel: 2 },
-          { word: "সফলতা", parts: ["স", "ফ", "ল", "তা"], minLevel: 2 },
-          { word: "ব্যর্থতা", parts: ["ব্য", "র্থ", "তা"], minLevel: 2 },
-          { word: "সুযোগ", parts: ["সু", "যো", "গ"], minLevel: 2 },
-          { word: "ঝুঁকি", parts: ["ঝুঁ", "কি"], minLevel: 2 },
-          { word: "বিপদ", parts: ["বি", "প", "দ"], minLevel: 2 },
-          { word: "ঘটনা", parts: ["ঘ", "ট", "না"], minLevel: 2 },
-          { word: "পরিচয়", parts: ["প", "রি", "চ", "য়"], minLevel: 2 },
-          { word: "পরিচিত", parts: ["প", "রি", "চি", "ত"], minLevel: 2 },
-          { word: "অপরিচিত", parts: ["অ", "প", "রি", "চি", "ত"], minLevel: 2 },
-          { word: "অনুমান", parts: ["অ", "নু", "মা", "ন"], minLevel: 2 },
-          { word: "পেশা", parts: ["পে", "শা"], minLevel: 2 },
-          { word: "নেশা", parts: ["নে", "শা"], minLevel: 2 },
-          { word: "অভ্যাস", parts: ["অ", "ভ্যা", "স"], minLevel: 2 },
-          { word: "আচরণ", parts: ["আ", "চ", "র", "ণ"], minLevel: 2 },
-          { word: "ব্যবহার", parts: ["ব্য", "ব", "হা", "র"], minLevel: 2 },
-          { word: "চরিত্র", parts: ["চ", "রি", "ত্র"], minLevel: 2 },
-          { word: "সুনাম", parts: ["সু", "না", "ম"], minLevel: 2 },
-          { word: "নিন্দা", parts: ["নি", "ন্দা"], minLevel: 2 },
-          { word: "ইশারা", parts: ["ই", "শা", "রা"], minLevel: 2 },
-          { word: "সংকেত", parts: ["সং", "কে", "ত"], minLevel: 2 },
-          { word: "প্রমাণ", parts: ["প্র", "মা", "ণ"], minLevel: 2 },
-          { word: "সাক্ষী", parts: ["সা", "ক্ষী"], minLevel: 2 },
-          { word: "মিথ্যা", parts: ["মি", "থ্যা"], minLevel: 2 },
-          { word: "সত্য", parts: ["স", "ত্য"], minLevel: 2 },
-          { word: "শুদ্ধ", parts: ["শু", "দ্ধ"], minLevel: 2 },
-          { word: "ত্রুটি", parts: ["ত্রু", "টি"], minLevel: 2 },
-          { word: "ক্ষমতা", parts: ["ক্ষ", "ম", "তা"], minLevel: 2 },
-          { word: "প্রভাব", parts: ["প্র", "ভা", "ব"], minLevel: 2 },
-          { word: "সম্পর্ক", parts: ["স", "ম্প", "র্ক"], minLevel: 2 },
-          { word: "আগমন", parts: ["আ", "গ", "ম", "ন"], minLevel: 2 },
-          { word: "উপকার", parts: ["উ", "প", "কা", "র"], minLevel: 2 },
-          { word: "অপকার", parts: ["অ", "প", "কা", "র"], minLevel: 2 },
-          { word: "টীকা", parts: ["টী", "কা"], minLevel: 2 },
-          { word: "ব্যাংক", parts: ["ব্যাং", "ক"], minLevel: 2 },
-          { word: "নার্স", parts: ["না", "র্স"], minLevel: 2 },
-          { word: "নাবিক", parts: ["না", "বি", "ক"], minLevel: 2 },
-          { word: "ডুবুরি", parts: ["ডু", "বু", "রি"], minLevel: 2 },
-          { word: "গায়ক", parts: ["গা", "য়", "ক"], minLevel: 2 },
-          { word: "গায়িকা", parts: ["গা", "য়ি", "কা"], minLevel: 2 },
-          { word: "পেন্সিল", parts: ["পেন", "সি", "ল"], minLevel: 2 },
-          { word: "রাবার", parts: ["রা", "বা", "র"], minLevel: 2 },
-          { word: "আদালত", parts: ["আ", "দা", "ল", "ত"], minLevel: 2 },
-          { word: "শিল্পী", parts: ["শি", "ল্পী"], minLevel: 2 },
-
-          // --- Level 3 (কিছুটা দীর্ঘ, যুক্তাক্ষরযুক্ত বা কম প্রচলিত কিন্তু জানা শব্দ) ---
-          { word: "বাংলাদেশ", parts: ["বাং", "লা", "দে", "শ"], minLevel: 3 },
-          { word: "টেলিভিশন", parts: ["টে", "লি", "ভি", "শ", "ন"], minLevel: 3 },
-          { word: "মোটরসাইকেল", parts: ["মো", "ট", "র", "সা", "ই", "কে", "ল"], minLevel: 3 },
-          { word: "কম্পিউটার", parts: ["ক", "ম্পি", "উ", "টা", "র"], minLevel: 3 },
-          { word: "ইন্টারনেট", parts: ["ই", "ন্টা", "র", "নে", "ট"], minLevel: 3 },
-          { word: "মোবাইল", parts: ["মো", "বা", "ই", "ল"], minLevel: 3 },
-          { word: "রাজনীতি", parts: ["রা", "জ", "নী", "তি"], minLevel: 3 },
-          { word: "অর্থনীতি", parts: ["অ", "র্থ", "নী", "তি"], minLevel: 3 },
-          { word: "সংবিধান", parts: ["সং", "বি", "ধা", "ন"], minLevel: 3 },
-          { word: "আইনজীবী", parts: ["আ", "ই", "ন", "জী", "বী"], minLevel: 3 },
-          { word: "বিচারপতি", parts: ["বি", "চা", "র", "প", "তি"], minLevel: 3 },
-          { word: "সাংবাদিক", parts: ["সাং", "বা", "দি", "ক"], minLevel: 3 },
-          { word: "সংবাদপত্র", parts: ["সং", "বা", "দ", "প", "ত্র"], minLevel: 3 },
-          { word: "সম্পাদক", parts: ["স", "ম্পা", "দ", "ক"], minLevel: 3 },
-          { word: "প্রকৌশলী", parts: ["প্র", "কৌ", "শ", "লী"], minLevel: 3 },
-          { word: "স্থপতি", parts: ["স্থ", "প", "তি"], minLevel: 3 },
-          { word: "গবেষণা", parts: ["গ", "বে", "ষ", "ণা"], minLevel: 3 },
-          { word: "উদ্ভাবন", parts: ["উ", "দ্ভা", "ব", "ন"], minLevel: 3 },
-          { word: "প্রযুক্তি", parts: ["প্র", "যু", "ক্তি"], minLevel: 3 },
-          { word: "অক্সিজেন", parts: ["অ", "ক্সি", "জে", "ন"], minLevel: 3 },
-          { word: "কার্বন", parts: ["কা", "র্ব", "ন"], minLevel: 3 },
-          { word: "হাইড্রোজেন", parts: ["হা", "ই", "ড্রো", "জে", "ন"], minLevel: 3 },
-          { word: "ব্যবস্থাপনা", parts: ["ব্য", "ব", "স্থা", "প", "না"], minLevel: 3 },
-          { word: "পরিচালক", parts: ["প", "রি", "চা", "ল", "ক"], minLevel: 3 },
-          { word: "কর্মকর্তা", parts: ["ক", "র্ম", "ক", "র্তা"], minLevel: 3 },
-          { word: "কর্মচারী", parts: ["ক", "র্ম", "চা", "রী"], minLevel: 3 },
-          { word: "স্বাধীনতা", parts: ["স্বা", "ধী", "ন", "তা"], minLevel: 3 },
-          { word: "প্রজাতন্ত্র", parts: ["প্র", "জা", "ত", "ন্ত্র"], minLevel: 3 },
-          { word: "গণতন্ত্র", parts: ["গ", "ণ", "ত", "ন্ত্র"], minLevel: 3 },
-          { word: "অধিকার", parts: ["অ", "ধি", "কা", "র"], minLevel: 3 },
-          { word: "কর্তব্য", parts: ["ক", "র্ত", "ব্য"], minLevel: 3 },
-          { word: "দায়িত্ব", parts: ["দা", "য়ি", "ত্ব"], minLevel: 3 },
-          { word: "আন্তর্জাতিক", parts: ["আ", "ন্ত", "র্জা", "তি", "ক"], minLevel: 3 },
-          { word: "রাষ্ট্রদূত", parts: ["রা", "ষ্ট্র", "দূ", "ত"], minLevel: 3 },
-          { word: "প্রধানমন্ত্রী", parts: ["প্র", "ধা", "ন", "ম", "ন্ত্রী"], minLevel: 3 },
-          { word: "রাষ্ট্রপতি", parts: ["রা", "ষ্ট্র", "প", "তি"], minLevel: 3 },
-          { word: "মন্ত্রিসভা", parts: ["ম", "ন্ত্রি", "স", "ভা"], minLevel: 3 },
-          { word: "সংস্কৃতি", parts: ["সং", "স্কৃ", "তি"], minLevel: 3 },
-          { word: "ঐতিহ্য", parts: ["ঐ", "তি", "হ্য"], minLevel: 3 },
-          { word: "সাহিত্য", parts: ["সা", "হি", "ত্য"], minLevel: 3 },
-          { word: "শিল্পকলা", parts: ["শি", "ল্প", "ক", "লা"], minLevel: 3 },
-          { word: "জাদুঘর", parts: ["জা", "দু", "ঘ", "র"], minLevel: 3 },
-          { word: "চিড়িয়াখানা", parts: ["চি", "ড়ি", "য়া", "খা", "না"], minLevel: 3 },
-          { word: "বিমানবন্দর", parts: ["বি", "মা", "ন", "ব", "ন্দ", "র"], minLevel: 3 },
-          { word: "বিশ্ববিদ্যালয়", parts: ["বি", "শ্ব", "বি", "দ্যা", "ল", "য়"], minLevel: 3 },
-          { word: "চিকিৎসা", parts: ["চি", "কি", "ৎ", "সা"], minLevel: 3 },
-          { word: "অস্ত্রোপচার", parts: ["অ", "স্ত্রো", "প", "চা", "র"], minLevel: 3 },
-          { word: "পরীক্ষাগার", parts: ["প", "রী", "ক্ষা", "গা", "র"], minLevel: 3 },
-          { word: "রাসায়নিক", parts: ["রা", "সা", "য়", "নি", "ক"], minLevel: 3 },
-          { word: "পদার্থ", parts: ["প", "দা", "র্থ"], minLevel: 3 },
-          { word: "উদ্ভিদ", parts: ["উ", "দ্ভি", "দ"], minLevel: 3 },
-          { word: "প্রাণী", parts: ["প্রা", "ণী"], minLevel: 3 },
-          { word: "পরিবেশদূষণ", parts: ["প", "রি", "বে", "শ", "দূ", "ষ", "ণ"], minLevel: 3 },
-          { word: "জলবায়ু", parts: ["জ", "ল", "বা", "য়ু"], minLevel: 3 },
-          { word: "ভূমিকম্প", parts: ["ভূ", "মি", "ক", "ম্প"], minLevel: 3 },
-          { word: "ঘূর্ণিঝড়", parts: ["ঘূ", "র্ণি", "ঝ", "ড়"], minLevel: 3 },
-          { word: "বন্যা", parts: ["ব", "ন্যা"], minLevel: 3 },
-          { word: "আগ্নেয়গিরি", parts: ["আ", "গ্নে", "য়", "গি", "রি"], minLevel: 3 },
-          { word: "মহাকাশ", parts: ["ম", "হা", "কা", "শ"], minLevel: 3 },
-          { word: "উপগ্রহ", parts: ["উ", "প", "গ্র", "হ"], minLevel: 3 },
-          { word: "নক্ষত্র", parts: ["ন", "ক্ষ", "ত্র"], minLevel: 3 },
-          { word: "দূরবীক্ষণ", parts: ["দূ", "র", "বী", "ক্ষ", "ণ"], minLevel: 3 },
-          { word: "অণুবীক্ষণ", parts: ["অ", "ণু", "বী", "ক্ষ", "ণ"], minLevel: 3 },
-          { word: "পেশাজীবী", parts: ["পে", "শা", "জী", "বী"], minLevel: 3 },
-          { word: "ব্যবসায়ী", parts: ["ব্য", "ব", "সা", "য়ী"], minLevel: 3 },
-          { word: "বিনিয়োগ", parts: ["বি", "নি", "য়ো", "গ"], minLevel: 3 },
-          { word: "বিজ্ঞাপন", parts: ["বি", "জ্ঞা", "প", "ন"], minLevel: 3 },
-          { word: "পর্যটন", parts: ["প", "র্য", "ট", "ন"], minLevel: 3 },
-          { word: "বিনোদন", parts: ["বি", "নো", "দ", "ন"], minLevel: 3 },
-          { word: "কলকারখানা", parts: ["ক", "ল", "কা", "র", "খা", "না"], minLevel: 3 },
-          { word: "যানবাহন", parts: ["যা", "ন", "বা", "হ", "ন"], minLevel: 3 },
-          { word: "যোগাযোগ", parts: ["যো", "গা", "যো", "গ"], minLevel: 3 },
-          { word: "তথ্যপ্রযুক্তি", parts: ["ত", "থ্য", "প্র", "যু", "ক্তি"], minLevel: 3 },
-          { word: "আবহাওয়া", parts: ["আ", "ব", "হা", "ও", "য়া"], minLevel: 3 },
-          { word: "প্রয়োজনীয়", parts: ["প্র", "য়ো", "জ", "নী", "য়"], minLevel: 3 },
-          { word: "গুরুত্বপূর্ণ", parts: ["গু", "রু", "ত্ব", "পূ", "র্ণ"], minLevel: 3 },
-          { word: "অসাধারণ", parts: ["অ", "সা", "ধা", "র", "ণ"], minLevel: 3 },
-          { word: "বুদ্ধিমান", parts: ["বু", "দ্ধি", "মা", "ন"], minLevel: 3 },
-          { word: "পরিশ্রমী", parts: ["প", "রি", "শ্র", "মী"], minLevel: 3 },
-          { word: "অনুসন্ধান", parts: ["অ", "নু", "স", "ন্ধা", "ন"], minLevel: 3 },
-          { word: "পর্যবেক্ষণ", parts: ["প", "র্য", "বে", "ক্ষ", "ণ"], minLevel: 3 },
-          { word: "সমালোচনা", parts: ["স", "মা", "লো", "চ", "না"], minLevel: 3 },
-          { word: "প্রতিযোগিতা", parts: ["প্র", "তি", "যো", "গি", "তা"], minLevel: 3 },
-          { word: "পুরস্কার", parts: ["পু", "র", "স্কা", "র"], minLevel: 3 },
-          { word: "সম্মাননা", parts: ["স", "ম্মা", "ন", "না"], minLevel: 3 },
-          { word: "অভিজ্ঞতা", parts: ["অ", "ভি", "জ্ঞ", "তা"], minLevel: 3 },
-          { word: "স্মরণীয়", parts: ["স্ম", "র", "ণী", "য়"], minLevel: 3 },
-          { word: "ভ্রমণকাহিনী", parts: ["ভ্র", "ম", "ণ", "কা", "হি", "নী"], minLevel: 3 },
-          { word: "জীবনী", parts: ["জী", "ব", "নী"], minLevel: 3 },
-          { word: "আত্মজীবনী", parts: ["আ", "ত্ম", "জী", "ব", "নী"], minLevel: 3 },
-          { word: "নারায়ণগঞ্জ", parts: ["না", "রা", "য়", "ণ", "গ", "ঞ্জ"], minLevel: 3 },
-          { word: "চট্টগ্রাম", parts: ["চ", "ট্ট", "গ্রা", "ম"], minLevel: 3 },
-          { word: "রাজশাহী", parts: ["রা", "জ", "শা", "হী"], minLevel: 3 },
-          { word: "কলকাতা", parts: ["কো", "ল", "কা", "তা"], minLevel: 3 },
-          { word: "হিমালয়", parts: ["হি", "মা", "ল", "য়"], minLevel: 3 },
-          { word: "সুন্দরবন", parts: ["সু", "ন্দ", "র", "ব", "ন"], minLevel: 3 },
-          { word: "পদ্মানদী", parts: ["প", "দ্মা", "ন", "দী"], minLevel: 3 },
-          { word: "ব্রহ্মপুত্র", parts: ["ব্র", "হ্ম", "পু", "ত্র"], minLevel: 3 },
-          { word: "বৃহস্পতিবার", parts: ["বৃ", "হ", "স্প", "তি", "বা", "র"], minLevel: 3 },
-          { word: "শুক্রবার", parts: ["শু", "ক্র", "বা", "র"], minLevel: 3 },
-          { word: "জানুয়ারি", parts: ["জা", "নু", "য়া", "রি"], minLevel: 3 },
-          { word: "ফেব্রুয়ারি", parts: ["ফে", "ব্রু", "য়া", "রি"], minLevel: 3 },
-          { word: "ডিসেম্বর", parts: ["ডি", "সে", "ম্ব", "র"], minLevel: 3 },
-          { word: "জন্মগ্রহণ", parts: ["জ", "ন্ম", "গ্র", "হ", "ণ"], minLevel: 3 },
-          { word: "মৃত্যুবরণ", parts: ["মৃ", "ত্যু", "ব", "র", "ণ"], minLevel: 3 },
-          { word: "প্রকাশিত", parts: ["প্র", "কা", "শি", "ত"], minLevel: 3 },
-          { word: "সম্পাদিত", parts: ["স", "ম্পা", "দি", "ত"], minLevel: 3 },
-          { word: "অনুদিত", parts: ["অ", "নু", "দি", "ত"], minLevel: 3 },
-          { word: "গ্রহণযোগ্য", parts: ["গ্র", "হ", "ণ", "যো", "গ্য"], minLevel: 3 },
-          { word: "অবিশ্বাস্য", parts: ["অ", "বি", "শ্বা", "স্য"], minLevel: 3 },
-          { word: "অনুপ্রেরণা", parts: ["অ", "নু", "প্রে", "র", "ণা"], minLevel: 3 },
-          { word: "পরিচয়পত্র", parts: ["প", "রি", "চ", "য়", "প", "ত্র"], minLevel: 3 },
-          { word: "আমন্ত্রণ", parts: ["আ", "ম", "ন্ত্র", "ণ"], minLevel: 3 },
-          { word: "উপহার", parts: ["উ", "প", "হা", "র"], minLevel: 3 },
-          { word: "অভিনন্দন", parts: ["অ", "ভি", "ন", "ন্দ", "ন"], minLevel: 3 },
-          { word: "সহানুভূতি", parts: ["স", "হা", "নু", "ভূ", "তি"], minLevel: 3 },
-          { word: "কৃতজ্ঞতা", parts: ["কৃ", "ত", "জ্ঞ", "তা"], minLevel: 3 },
-          { word: "প্রতিশ্রুতি", parts: ["প্র", "তি", "শ্রু", "তি"], minLevel: 3 },
-          { word: "সমর্থন", parts: ["স", "ম", "র্থ", "ন"], minLevel: 3 },
-          { word: "বিরোধিতা", parts: ["বি", "রো", "ধি", "তা"], minLevel: 3 },
-          { word: "আলো ঝলমলে", parts: ["আ", "লো", "ঝ", "ল", "ম", "লে"], minLevel: 3 },
-          { word: "বাস্তবায়ন", parts: ["বা", "স্ত", "বা", "য়", "ন"], minLevel: 3 },
-          { word: "শক্তিশালী", parts: ["শ", "ক্তি", "শা", "লী"], minLevel: 3 },
-          { word: "স্বাস্থ্যবান", parts: ["স্বা", "স্থ্য", "বা", "ন"], minLevel: 3 },
-          { word: "আগামীকাল", parts: ["আ", "গা", "মী", "কা", "ল"], minLevel: 3 },
-          { word: "সপ্তাহান্ত", parts: ["স", "প্তাহা", "ন্ত"], minLevel: 3 },
-          { word: "বিশ্বাসঘাতক", parts: ["বি", "শ্বা", "স", "ঘা", "ত", "ক"], minLevel: 3 },
-          { word: "প্রতিহিংসা", parts: ["প্র", "তি", "হিং", "সা"], minLevel: 3 },
-          { word: "সহযোগিতা", parts: ["স", "হ", "যো", "গি", "তা"], minLevel: 3 },
-          { word: "প্রতিদ্বন্দ্বী", parts: ["প্র", "তি", "দ্ব", "ন্দ্বী"], minLevel: 3 },
-          { word: "আন্দোলন", parts: ["আ", "ন্দো", "ল", "ন"], minLevel: 3 },
-          { word: "বিপ্লব", parts: ["বি", "প্ল", "ব"], minLevel: 3 },
-          { word: "সংস্কার", parts: ["সং", "স্কা", "র"], minLevel: 3 },
-          { word: "উদ্বোধন", parts: ["উ", "দ্বো", "ধ", "ন"], minLevel: 3 },
-          { word: "সমাপ্তি", parts: ["স", "মা", "প্তি"], minLevel: 3 },
-          { word: "উদ্দেশ্য", parts: ["উ", "ദ്ദേ", "শ্য"], minLevel: 3 },
-          { word: "লক্ষ্য", parts: ["ল", "ক্ষ্য"], minLevel: 3 },
-          { word: "সম্ভাবনা", parts: ["স", "ম্ভা", "ব", "না"], minLevel: 3 },
-          { word: "নিরাপত্তা", parts: ["নি", "রা", "প", "ত্তা"], minLevel: 3 },
-          { word: "দুর্ঘটনা", parts: ["দু", "র্ঘ", "ট", "না"], minLevel: 3 },
-          { word: "সিদ্ধান্ত", parts: ["সি", "দ্ধা", "ন্ত"], minLevel: 3 },
-          { word: "খ্যাতি", parts: ["খ্যা", "তি"], minLevel: 3 },
-          { word: "দুর্নাম", parts: ["দু", "র্না", "ম"], minLevel: 3 },
-          { word: "সম্মান", parts: ["স", "ম্মা", "ন"], minLevel: 3 },
-          { word: "অপমান", parts: ["অ", "প", "মা", "ন"], minLevel: 3 },
-          { word: "প্রশংসা", parts: ["প্র", "শং", "সা"], minLevel: 3 },
-          { word: "অনুগ্রহ", parts: ["অ", "নু", "গ্র", "হ"], minLevel: 3 },
-          { word: "আশীর্বাদ", parts: ["আ", "শী", "র্বা", "দ"], minLevel: 3 },
-          { word: "অভিশাপ", parts: ["অ", "ভি", "শা", "প"], minLevel: 3 },
-          { word: "নিয়ন্ত্রণ", parts: ["নি", "য়", "ন্ত্র", "ণ"], minLevel: 3 },
-          { word: "নির্ভরশীলতা", parts: ["নি", "র্ভ", "র", "শী", "ল", "তা"], minLevel: 3 },
-          { word: "পার্থক্য", parts: ["পা", "র্থ", "ক্য"], minLevel: 3 },
-          { word: "সাদৃশ্য", parts: ["সা", "দৃ", "শ্য"], minLevel: 3 },
-          { word: "বৈসাদৃশ্য", parts: ["বৈ", "সা", "দৃ", "শ্য"], minLevel: 3 },
-          { word: "অনুপস্থিত", parts: ["অ", "নু", "প", "স্থি", "ত"], minLevel: 3 },
-          { word: "উপস্থিত", parts: ["উ", "প", "স্থি", "ত"], minLevel: 3 },
-          { word: "প্রস্থান", parts: ["প্র", "স্থা", "ন"], minLevel: 3 },
-          { word: "অভ্যর্থনা", parts: ["অ", "ভ্য", "র্থ", "না"], minLevel: 3 },
-          { word: "আতিথেয়তা", parts: ["আ", "তি", "থে", "য়", "তা"], minLevel: 3 },
-          { word: "নিমন্ত্রণ", parts: ["নি", "ম", "ন্ত্র", "ণ"], minLevel: 3 },
-          { word: "আবিষ্কার", parts: ["আ", "বি", "ষ্কা", "র"], minLevel: 3 },
-          { word: "অনুশীলন", parts: ["অ", "নু", "শী", "ল", "ন"], minLevel: 3 },
-          { word: "প্রস্তুতি", parts: ["প্র", "স্তু", "তি"], minLevel: 3 },
-          { word: "আয়োজন", parts: ["আ", "য়ো", "জ", "ন"], minLevel: 3 },
-          { word: "উদ্যোগ", parts: ["উ", "দ্যো", "গ"], minLevel: 3 },
-          { word: "অংশগ্রহণ", parts: ["অং", "শ", "গ্র", "হ", "ণ"], minLevel: 3 },
-          { word: "সমবেদনা", parts: ["স", "ম", "বে", "দ", "না"], minLevel: 3 },
-          { word: "অধ্যাপক", parts: ["অ", "ধ্যা", "প", "ক"], minLevel: 3 },
-          { word: "অধ্যক্ষ", parts: ["অ", "ধ্য", "ক্ষ"], minLevel: 3 },
-          { word: "রেজিস্ট্রার", parts: ["রে", "জি", "স্ট্রা", "র"], minLevel: 3 },
-          { word: "গ্রন্থাগার", parts: ["গ্র", "ন্থা", "গা", "র"], minLevel: 3 },
-          { word: "গ্রন্থাগারিক", parts: ["গ্র", "ন্থা", "গা", "রি", "ক"], minLevel: 3 },
-          { word: "প্রকাশনা", parts: ["প্র", "কা", "শ", "না"], minLevel: 3 },
-          { word: "মুদ্রণ", parts: ["মু", "দ্র", "ণ"], minLevel: 3 },
-          { word: "পরিবেশক", parts: ["প", "রি", "বে", "শ", "ক"], minLevel: 3 },
-          { word: "ক্রেডিট কার্ড", parts: ["ক্রে", "ডি", "ট", "কা", "র্ড"], minLevel: 3 },
-          { word: "ডেবিট কার্ড", parts: ["ডে", "বি", "ট", "কা", "র্ড"], minLevel: 3 },
-          { word: "অর্থনীতিবিদ", parts: ["অ", "র্থ", "নী", "তি", "বি", "দ"], minLevel: 3 },
-          { word: "বিজ্ঞানী", parts: ["বি", "জ্ঞা", "নী"], minLevel: 3 },
-          { word: "গবেষক", parts: ["গ", "বে", "ষ", "ক"], minLevel: 3 },
-          { word: "মনোবিজ্ঞানী", parts: ["ম", "নো", "বি", "জ্ঞা", "নী"], minLevel: 3 },
-          { word: "সমাজবিজ্ঞানী", parts: ["স", "মা", "জ", "বি", "জ্ঞা", "নী"], minLevel: 3 },
-          { word: "নৃতত্ত্ববিদ", parts: ["নৃ", "ত", "ত্ত্ব", "বি", "দ"], minLevel: 3 },
-          { word: "প্রত্নতত্ত্ববিদ", parts: ["প্র", "ত্ন", "ত", "ত্ত্ব", "বি", "দ"], minLevel: 3 },
-          { word: "জ্যোতির্বিদ", parts: ["জ্যো", "তি", "র্বি", "দ"], minLevel: 3 },
-          { word: "চিকিৎসক", parts: ["চি", "কি", "ৎস", "ক"], minLevel: 3 },
-          { word: "ফার্মাসিস্ট", parts: ["ফা", "র্মা", "সি", "স্ট"], minLevel: 3 },
-          { word: "মহাকাশচারী", parts: ["ম", "হা", "কা", "শ", "চা", "রী"], minLevel: 3 },
-          { word: "বৈমানিক", parts: ["বৈ", "মা", "নি", "ক"], minLevel: 3 },
-          { word: "পর্বতারোহী", parts: ["প", "র্ব", "তা", "রো", "হী"], minLevel: 3 },
-          { word: "অগ্নি নির্বাপক", parts: ["অ", "গ্নি", "নি", "র্বা", "প", "ক"], minLevel: 3 },
-          { word: "নিরাপত্তারক্ষী", parts: ["নি", "রা", "প", "ত্তা", "র", "ক্ষী"], minLevel: 3 },
-          { word: "পরিচ্ছনতাকর্মী", parts: ["প", "রি", "চ্ছ", "ন্ন", "তা", "ক", "র্মী"], minLevel: 3 },
-          { word: "গৃহকর্মী", parts: ["গৃ", "হ", "ক", "র্মী"], minLevel: 3 },
-          { word: "রাজনীতিবিদ", parts: ["রা", "জ", "নী", "তি", "বি", "দ"], minLevel: 3 },
-          { word: "কূটনীতিবিদ", parts: ["কূ", "ট", "নী", "তি", "বি", "দ"], minLevel: 3 },
-          { word: "অভিনেতা", parts: ["অ", "ভি", "নে", "তা"], minLevel: 3 },
-          { word: "অভিনেত্রী", parts: ["অ", "ভি", "নে", "ত্রী"], minLevel: 3 },
-          { word: "নৃত্যশিল্পী", parts: ["নৃ", "ত্য", "শি", "ল্পী"], minLevel: 3 },
-          { word: "সুরকার", parts: ["সু", "র", "কা", "র"], minLevel: 3 },
-          { word: "গীতিকার", parts: ["গী", "তি", "কা", "র"], minLevel: 3 },
-          { word: "চিত্রকর", parts: ["চি", "ত্র", "ক", "র"], minLevel: 3 },
-          { word: "ভাস্কর", parts: ["ভা", "স্ক", "র"], minLevel: 3 },
-          { word: "আলোকচিত্রী", parts: ["আ", "লো", "ক", "চি", "ত্রী"], minLevel: 3 },
-          { word: "চলচ্চিত্রকার", parts: ["চ", "ল", "চ্চি", "ত্র", "কা", "র"], minLevel: 3 },
-          { word: "খেলোয়াড়", parts: ["খে", "লো", "য়া", "ড়"], minLevel: 3 },
-          { word: "উদ্যোক্তা", parts: ["উ", "দ্যো", "ক্তা"], minLevel: 3 },
-          { word: "হিসাবরক্ষক", parts: ["হি", "সা", "ব", "র", "ক্ষ", "ক"], minLevel: 3 },
-          { word: "বাজার বিশ্লেষক", parts: ["বা", "জা", "র", "বি", "শ্লে", "ষ", "ক"], minLevel: 3 },
-          { word: "মানব সম্পদ", parts: ["মা", "ন", "ব", "স", "ম্প", "দ"], minLevel: 3 },
-          { word: "জনসংযোগ", parts: ["জ", "ন", "সং", "যো", "গ"], minLevel: 3 },
-          { word: "অনুচ্ছেদ", parts: ["অ", "নু", "চ্ছে", "দ"], minLevel: 3 },
-          { word: "শিরোনাম", parts: ["শি", "রো", "না", "ম"], minLevel: 3 },
-          { word: "সূচিপত্র", parts: ["সূ", "চি", "প", "ত্র"], minLevel: 3 },
-          { word: "ভূমিকা", parts: ["ভূ", "মি", "কা"], minLevel: 3 },
-          { word: "উপসংহার", parts: ["উ", "প", "সং", "হা", "র"], minLevel: 3 },
-          { word: "পরিশিষ্ট", parts: ["প", "রি", "শি", "ষ্ট"], minLevel: 3 },
-          { word: "গ্রন্থপঞ্জি", parts: ["গ্র", "ন্থ", "প", "ঞ্জি"], minLevel: 3 },
-          { word: "পাদটীকা", parts: ["পা", "দ", "টী", "কা"], minLevel: 3 },
-          { word: "ছদ্মনাম", parts: ["ছ", "দ্ম", "না", "ম"], minLevel: 3 },
-          { word: "চিত্রনাট্য", parts: ["চি", "ত্র", "না", "ট্য"], minLevel: 3 },
-          { word: "সংলাপ", parts: ["সং", "লা", "প"], minLevel: 3 },
-          { word: "নির্দেশনা", parts: ["নি", "র্দে", "শ", "না"], minLevel: 3 },
-          { word: "প্রযোজনা", parts: ["প্র", "যো", "জ", "না"], minLevel: 3 },
-          { word: "আবহ সঙ্গীত", parts: ["আ", "ব", "হ", "সং", "গী", "ত"], minLevel: 3 },
-          { word: "শব্দ গ্রহণ", parts: ["শ", "ব্দ", "গ্র", "হ", "ণ"], minLevel: 3 },
-          { word: "চলচ্চিত্র গ্রহণ", parts: ["চ", "ল", "চ্চি", "ত্র", "গ্র", "হ", "ণ"], minLevel: 3 },
-          { word: "বিশেষ প্রভাব", parts: ["বি", "শে", "ষ", "প্র", "ভা", "ব"], minLevel: 3 },
-          { word: "অ্যানিমেশন", parts: ["অ্যা", "নি", "মে", "শ", "ন"], minLevel: 3 },
-          { word: "বার্ষিক", parts: ["বা", "র্ষি", "ক"], minLevel: 3 },
-          { word: "সাপ্তাহিক", parts: ["সা", "প্তা", "হি", "ক"], minLevel: 3 },
-          { word: "দৈনিক", parts: ["দৈ", "নি", "ক"], minLevel: 3 },
-          { word: "সংরক্ষণ", parts: ["সং", "র", "ক্ষ", "ণ"], minLevel: 3 },
-          { word: "দূষণ", parts: ["দূ", "ষ", "ণ"], minLevel: 3 },
-        ];
-
- 
-</script> 
-
-
-<style>
-    /* Google Font Import */
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap');
-
-    :root {
-        --bg-color: #f8f9fa; /* একটু হালকা ব্যাকগ্রাউন্ড */
-        --container-bg: #ffffff;
-        --text-color: #343a40; /* গাঢ় টেক্সট */
-        --primary-color: #00796b; /* একটু ভিন্ন সবুজ */
-        --secondary-color: #80cbc4; /* হালকা সবুজ */
-        --hint-color: #ff8f00;   /* কমলা */
-        --shop-color: #1e88e5;   /* নীল */
-        --tile-bg: #e0f2f1;      /* টাইল ব্যাকগ্রাউন্ড */
-        --tile-border: #b2dfdb;
-        --tile-hover-bg: #c8e6c9;
-        --tile-disabled-bg: #e0e0e0;
-        --input-bg: #e0f7fa;
-        --input-border: #b2ebf2;
-        --correct-color: #2e7d32; /* গাঢ় সবুজ */
-        --incorrect-color: #c62828; /* গাঢ় লাল */
-        --border-color: #dee2e6; /* হালকা বর্ডার */
-        --reload-btn-bg: #ffc107; /* হলুদ */
-        --reload-btn-border: #ffb300;
-        --reload-btn-text: #212529;
-        --backspace-btn-bg: #ffcc80; /* হালকা কমলা */
-        --backspace-btn-border: #ffb74d;
-        --backspace-btn-text: #212529;
-        --free-hint-btn-bg: #4caf50; /* উজ্জ্বল সবুজ */
-        --free-hint-btn-border: #388e3c;
-        --free-hint-btn-text: white;
-        --proceed-spin-bg: #43a047;
-        --proceed-spin-border: #388e3c;
-        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* উন্নত শ্যাডো */
-    }
-
-    body {
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        font-family: 'Noto Sans Bengali', sans-serif;
-        display: flex;
-        flex-direction: column; /* কন্টেন্ট উল্লম্বভাবে সাজানোর জন্য */
-        align-items: center; /* কন্টেন্ট মাঝে আনার জন্য */
-        min-height: 100vh;
-        margin: 0;
-        padding: 10px 15px; /* সামগ্রিক প্যাডিং */
-        box-sizing: border-box;
-        line-height: 1.6;
-    }
-
-    .ad-container {
-        width: 100%;
-        max-width: 728px; /* অ্যাডের নির্দিষ্ট প্রস্থ */
-        height: auto; /* অটো উচ্চতা, স্ক্রিপ্ট অনুযায়ী সেট হবে */
-        margin: 15px auto; /* উপরে-নিচে মার্জিন, পাশাপাশি অটো সেন্টারিং */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .game-container {
-        background-color: var(--container-bg);
-        border-radius: 16px; /* আরও মোলায়েম বর্ডার */
-        padding: 25px 30px; /* একটু বেশি প্যাডিং */
-        width: 100%;
-        max-width: 550px;
-        box-shadow: var(--shadow);
-        text-align: center;
-        margin-top: 10px; /* উপরের অ্যাড থেকে দূরত্ব */
-        margin-bottom: 10px; /* নিচের অ্যাড থেকে দূরত্ব */
-        transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out; /* Added for effects */
-    }
-    .game-container-victory {
-        box-shadow: 0 0 15px 7px gold, 0 0 25px 12px var(--correct-color);
-    }
-    .game-container-lose {
-        box-shadow: 0 0 15px 7px var(--incorrect-color), 0 0 25px 12px #ff0000;
-        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-    }
-
-    @keyframes shake {
-      10%, 90% {
-        transform: translate3d(-1px, 0, 0);
-      }
-      20%, 80% {
-        transform: translate3d(2px, 0, 0);
-      }
-      30%, 50%, 70% {
-        transform: translate3d(-3px, 0, 0);
-      }
-      40%, 60% {
-        transform: translate3d(3px, 0, 0);
-      }
-    }
-
-
-    .status-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px; /* উন্নত ব্যবধান */
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 1em;
-        font-weight: bold;
-    }
-
-    .status-item {
-        background-color: var(--bg-color);
-        padding: 6px 12px; /* একটু বড় প্যাডিং */
-        border-radius: 20px; /* আরও গোলাকার */
-        color: var(--primary-color);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    #hints-display {
-         color: var(--hint-color);
-    }
-
-    .shop-button {
-        background-color: var(--shop-color);
-        color: white;
-        border: none;
-        padding: 7px 15px; /* উন্নত প্যাডিং */
-        border-radius: 20px;
-        cursor: pointer;
-        font-family: 'Noto Sans Bengali', sans-serif;
-        font-size: 0.9em;
-        transition: background-color 0.2s, opacity 0.2s, transform 0.1s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .shop-button:hover:not(:disabled) {
-         background-color: #1573c4; /* হোভারে গাঢ় নীল */
-         transform: translateY(-1px);
-    }
-    .shop-button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    .instructions {
-        font-size: 1.15em; /* একটু বড় টেক্সট */
-        color: #495057; /* 약간 গাঢ় টেক্সট */
-        margin-bottom: 20px;
-    }
-
-    .jumbled-tiles-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 12px; /* টাইলসের মধ্যে বেশি ফাঁকা জায়গা */
-        margin-bottom: 25px;
-        min-height: 50px; /* উন্নত উচ্চতা */
-        padding: 10px;
-        background-color: var(--bg-color);
-        border-radius: 10px; /* গোলাকার কোণ */
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    .tile {
-        background-color: var(--tile-bg);
-        border: 1px solid var(--tile-border);
-        color: var(--primary-color);
-        font-size: 1.6em; /* বড় অক্ষর */
-        font-weight: bold;
-        padding: 8px 15px; /* উন্নত প্যাডিং */
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.2s, transform 0.1s, opacity 0.2s, box-shadow 0.2s;
-        user-select: none;
-        min-width: 40px; /* ন্যূনতম প্রস্থ */
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .tile:hover:not(:disabled) {
-        background-color: var(--tile-hover-bg);
-        transform: translateY(-2px); /* হোভারে সামান্য উপরে উঠবে */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .tile:active:not(:disabled) {
-        transform: scale(0.95);
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .tile:disabled {
-        background-color: var(--tile-disabled-bg);
-        color: #757575; /* নিষ্ক্রিয় রঙ */
-        cursor: not-allowed;
-        opacity: 0.7;
-        border-color: #bdbdbd;
-    }
-
-    .input-area-container {
-         margin-bottom: 20px;
-         padding: 15px;
-         background-color: var(--input-bg);
-         border: 1px dashed var(--input-border);
-         border-radius: 10px;
-         min-height: 50px;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    #input-display {
-        font-size: 1.8em; /* আরও বড় ইনপুট প্রদর্শন */
-        font-weight: bold;
-        color: var(--primary-color);
-        letter-spacing: 3px; /* অক্ষরের মধ্যে বেশি ফাঁকা */
-        word-break: break-all;
-        min-height: 1.5em; /* উন্নত উচ্চতা */
-    }
-
-     .controls {
-         margin-bottom: 20px;
-         display: flex;
-         justify-content: center;
-         gap: 10px; /* বাটনের মধ্যে বেশি ফাঁকা */
-         flex-wrap: wrap;
-     }
-     .control-button {
-        font-family: 'Noto Sans Bengali', sans-serif;
-        font-size: 0.95em; /* একটু বড় ফন্ট */
-        padding: 10px 18px; /* উন্নত প্যাডিং */
-        border-radius: 25px; /* আরও গোলাকার */
-        cursor: pointer;
-        transition: background-color 0.2s, opacity 0.2s, transform 0.1s, box-shadow 0.2s;
-        border: 1px solid transparent;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-     }
-     .control-button:hover:not(:disabled) {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-     }
-     .control-button:disabled {
-         opacity: 0.5;
-         cursor: not-allowed;
-         box-shadow: none;
-     }
-
-     #reload-game-button {
-        background-color: var(--reload-btn-bg);
-        border-color: var(--reload-btn-border);
-        color: var(--reload-btn-text);
-     }
-     #reload-game-button:hover:not(:disabled) { background-color: #ffb300; }
-
-     #backspace-button {
-        background-color: var(--backspace-btn-bg);
-        border-color: var(--backspace-btn-border);
-        color: var(--backspace-btn-text);
-     }
-     #backspace-button:hover:not(:disabled) { background-color: #ffb74d; }
-
-     #free-hint-button {
-        background-color: var(--free-hint-btn-bg);
-        border-color: var(--free-hint-btn-border);
-        color: var(--free-hint-btn-text);
-     }
-     #free-hint-button:hover:not(:disabled) { background-color: #388e3c; }
-
-      #hint-button {
-          background-color: var(--hint-color);
-          border-color: #f57c00; /* গাঢ় কমলা বর্ডার */
-          color: white;
-      }
-      #hint-button:hover:not(:disabled) { background-color: #f57c00; }
-
-    #message-area {
-        margin-top: 15px;
-        min-height: 30px; /* বার্তার জন্য উন্নত উচ্চতা */
-        font-size: 1.15em; /* বড় বার্তা */
-        font-weight: bold;
-        padding: 5px;
-    }
-    #message-area.correct { color: var(--correct-color); }
-    #message-area.incorrect { color: var(--incorrect-color); }
-    #message-area.level-up { color: var(--primary-color); }
-    #message-area.info { color: var(--hint-color); }
-    #message-area.shop { color: var(--shop-color); }
-
-    /* Spin Wheel Modal Styles */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.65); /* একটু গাঢ় ওভারলে */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        padding: 15px;
-        box-sizing: border-box;
-    }
-
-    .modal-content {
-        background-color: var(--container-bg);
-        padding: 30px; /* মডালে বেশি প্যাডিং */
-        border-radius: 16px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* উন্নত শ্যাডো */
-        text-align: center;
-        max-width: 420px; /* একটু চওড়া মডাল */
-        width: 100%;
-    }
-
-    .modal-content h2 {
-        color: var(--primary-color);
-        margin-top: 0;
-        margin-bottom: 25px;
-        font-size: 1.8em; /* বড় শিরোনাম */
-    }
-
-    .wheel-container {
-        position: relative;
-        margin-bottom: 30px;
-    }
-
-    .wheel {
-        display: flex;
-        flex-direction: column;
-        border: 3px solid var(--primary-color);
-        border-radius: 12px; /* মোলায়েম কোণ */
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .wheel-segment {
-        padding: 14px 10px; /* উন্নত প্যাডিং */
-        font-size: 1.1em;
-        font-weight: bold;
-        border-bottom: 1px solid var(--tile-border);
-        background-color: var(--tile-bg);
-        color: var(--text-color);
-        transition: background-color 0.1s, color 0.1s;
-    }
-
-    .wheel-segment:last-child {
-        border-bottom: none;
-    }
-
-    .wheel-segment.spinning-active {
-        background-color: var(--hint-color);
-        color: white;
-    }
-
-    .wheel-segment.highlighted {
-        background-color: var(--correct-color);
-        color: white;
-        font-size: 1.15em; /* হাইলাইট করা সেগমেন্ট একটু বড় */
-    }
-
-    #modal-spin-action-button {
-        background-color: var(--free-hint-btn-bg);
-        border: 1px solid var(--free-hint-btn-border);
-        color: var(--free-hint-btn-text);
-        padding: 12px 25px; /* উন্নত প্যাডিং */
-        font-size: 1.15em; /* বড় ফন্ট */
-        border-radius: 30px;
-        margin-top: 15px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-    }
-    #modal-spin-action-button:hover:not(:disabled) {
-         background-color: var(--free-hint-btn-border);
-         transform: translateY(-1px);
-         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    #modal-spin-action-button:disabled{
-        background-color: var(--tile-disabled-bg);
-        border-color: #bdbdbd;
-        color: #757575;
-        box-shadow: none;
-    }
-    #modal-spin-action-button.proceed {
-        background-color: var(--proceed-spin-bg);
-        border-color: var(--proceed-spin-border);
-    }
-    #modal-spin-action-button.proceed:hover:not(:disabled) {
-        background-color: var(--proceed-spin-border);
-    }
-
-
-    #spin-result-message {
-        margin-top: 20px;
-        min-height: 75px;
-        font-weight: bold;
-        font-size: 1.05em;
-        color: var(--primary-color);
-        line-height: 1.5;
-    }
-</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Local Multiplayer Shooter</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #000; color: #fff; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        #gameCanvas { background-color: #111; border: 2px solid #fff; touch-action: none; }
+        #controls, #connection { margin-top: 10px; text-align: center; }
+        textarea { width: 90%; height: 60px; margin: 5px 0; }
+        button { padding: 10px 15px; font-size: 16px; cursor: pointer; }
+        #shootBtn { position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; border-radius: 50%; background-color: red; color: white; font-size: 18px; border: 2px solid white; }
+    </style>
 </head>
 <body>
-    <div class="ad-container" id="top-ad-container">
-        <script type="text/javascript">
-            atOptions = {
-                'key' : '6d27287e4227540933eadd31abe0f678',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
+
+    <div id="connection">
+        <h3>WebRTC P2P Connection</h3>
+        <button onclick="createOffer()">Create Game</button>
+        <textarea id="offer" placeholder="Offer code will appear here..."></textarea>
+        <button onclick="joinGame()">Join Game</button>
+        <textarea id="answer" placeholder="Paste Offer here to create Answer, or paste Answer from peer here..."></textarea>
+        <button onclick="confirmConnection()">Confirm Connection</button>
+        <p id="status">Status: Disconnected</p>
+    </div>
+
+    <canvas id="gameCanvas" style="display:none;"></canvas>
+    <button id="shootBtn" style="display:none;">Shoot</button>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const shootBtn = document.getElementById('shootBtn');
+        const connectionDiv = document.getElementById('connection');
+        const statusEl = document.getElementById('status');
+        
+        canvas.width = window.innerWidth * 0.95;
+        canvas.height = window.innerHeight * 0.7;
+
+        let peerConnection;
+        let dataChannel;
+
+        const player1 = { x: 50, y: canvas.height / 2, width: 30, height: 30, color: 'cyan', bullets: [], health: 100 };
+        const player2 = { x: canvas.width - 80, y: canvas.height / 2, width: 30, height: 30, color: 'magenta', bullets: [], health: 100 };
+        let thisPlayer = null;
+        let otherPlayer = null;
+        let isHost = false;
+
+        function setupPeerConnection() {
+            try {
+                peerConnection = new RTCPeerConnection({
+                    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+                });
+
+                peerConnection.onicecandidate = event => {
+                    if (!event.candidate) {
+                        // When ICE gathering is complete, the description is fully formed.
+                        // We update the text area again to ensure it has all candidates.
+                        if (peerConnection.localDescription) {
+                            const descriptionText = JSON.stringify(peerConnection.localDescription);
+                            if (isHost) {
+                                document.getElementById('offer').value = descriptionText;
+                            } else {
+                                document.getElementById('answer').value = descriptionText;
+                            }
+                        }
+                    }
+                };
+
+                peerConnection.ondatachannel = event => {
+                    dataChannel = event.channel;
+                    setupDataChannel();
+                };
+            } catch (e) {
+                statusEl.innerText = "Error: WebRTC not supported or blocked in this browser.";
+                console.error("RTCPeerConnection error: ", e);
+            }
+        }
+
+        function setupDataChannel() {
+            dataChannel.onopen = () => {
+                statusEl.innerText = "Status: Connected!";
+                connectionDiv.style.display = 'none';
+                canvas.style.display = 'block';
+                shootBtn.style.display = 'block';
+                gameLoop();
             };
-        </script>
-        <script type="text/javascript" src="//www.highperformanceformat.com/6d27287e4227540933eadd31abe0f678/invoke.js"></script>
-    </div>
-<div class="game-container">
-    <div class="status-bar">
-        <span class="status-item" id="level-display">লেভেল: ১</span>
-        <span class="status-item" id="score-display">পয়েন্ট: ০</span>
-        <span class="status-item" id="hints-display">💡 ইঙ্গিত: ০</span>
-        <button id="buy-hints-button" class="shop-button">🛒 কিনুন (৫০০ পয়েন্টে ২টি)</button>
-    </div>
 
-    <div class="instructions">
-        নিচের অংশগুলো সঠিকভাবে সাজিয়ে শব্দটি তৈরি করুন:
-    </div>
-
-    <div class="jumbled-tiles-container" id="jumbled-tiles"></div>
-
-    <div class="input-area-container">
-        <div id="input-display"></div>
-    </div>
-
-    <div class="controls">
-        <button id="reload-game-button" class="control-button">🔄 পুনরায় শুরু</button>
-        <button id="backspace-button" class="control-button">🔙 এক ধাপ মুছুন</button>
-        <button id="free-hint-button" class="control-button">🎁 ফ্রী স্পিন</button>
-        <button id="hint-button" class="control-button">💡 ইঙ্গিত (খরচ)</button>
-    </div>
-
-    <div id="message-area"></div>
-</div>
-
-<!-- Spin Wheel Modal -->
-<div id="spin-wheel-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <h2>ফ্রী স্পিন হুইল!</h2>
-        <div class="wheel-container">
-            <div class="wheel">
-                <div class="wheel-segment" data-prize-index="0">২০০ পয়েন্ট</div>
-                <div class="wheel-segment" data-prize-index="1">১টি ইঙ্গিত</div>
-                <div class="wheel-segment" data-prize-index="2">৫০০ পয়েন্ট</div>
-                <div class="wheel-segment" data-prize-index="3">ফাঁকা</div>
-                <div class="wheel-segment" data-prize-index="4">৩টি ইঙ্গিত</div>
-            </div>
-        </div>
-        <button id="modal-spin-action-button" class="control-button">এড দেখে স্পিন করুন</button>
-        <p id="spin-result-message"></p>
-    </div>
-</div>
-
-<div class="ad-container" id="bottom-ad-container">
-    <script type="text/javascript">
-        atOptions = {
-            'key' : '6d27287e4227540933eadd31abe0f678', // একই কী ব্যবহার করা হচ্ছে, প্রয়োজনে ভিন্ন কী ব্যবহার করতে পারেন
-            'format' : 'iframe',
-            'height' : 90,
-            'width' : 728,
-            'params' : {}
-        };
-    </script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/6d27287e4227540933eadd31abe0f678/invoke.js"></script>
-</div>
-
-<script src="data.js"></script> <!-- data.js ফাইলটি সঠিক পথে লোড করতে হবে -->
-<script>
-    // --- Game State Variables ---
-    let currentLevel = 1;
-    let score = 0;
-    let totalHints = 2;
-    let correctAnswersInLevel = 0;
-    let currentQuestionIndex = -1;
-    let availableQuestions = [];
-    let usedWordIndices = [];
-    let currentWordData = null;
-    let jumbledParts = [];
-    let selectedParts = [];
-    let partTiles = [];
-    let isWaiting = false;
-    let lastPlayedWordObject = null;
-    let freeHintUsedThisWord = false;
-    
-    let adWindowObject = null;
-    const AD_START_TIME_KEY = 'banglaWordGame_adStartTime';
-    const AD_REQUIRED_VIEW_TIME_MS = 20000;
-
-    const HINT_COST = 500;
-    const HINTS_PER_PURCHASE = 2;
-
-    const LS_HINTS_KEY = 'banglaWordGame_totalHints';
-    const LS_SCORE_KEY = 'banglaWordGame_score';
-
-    const gameContainer = document.querySelector('.game-container');
-    const levelDisplay = document.getElementById('level-display');
-    const scoreDisplay = document.getElementById('score-display');
-    const hintsDisplay = document.getElementById('hints-display');
-    const buyHintsButton = document.getElementById('buy-hints-button');
-    const jumbledTilesContainer = document.getElementById('jumbled-tiles');
-    const inputDisplay = document.getElementById('input-display');
-    const messageArea = document.getElementById('message-area');
-
-    const reloadGameButton = document.getElementById('reload-game-button');
-    const backspaceButton = document.getElementById('backspace-button');
-    const freeHintButton = document.getElementById('free-hint-button');
-    const hintButton = document.getElementById('hint-button');
-
-    const spinWheelModal = document.getElementById('spin-wheel-modal');
-    const modalSpinActionButton = document.getElementById('modal-spin-action-button');
-    const spinResultMessage = document.getElementById('spin-result-message');
-
-    const prizes = [
-        { name: "২০০ পয়েন্ট", type: 'points', value: 200, segmentIndex: 0 },
-        { name: "১টি ইঙ্গিত", type: 'hints', value: 1, segmentIndex: 1 },
-        { name: "৫০০ পয়েন্ট", type: 'points', value: 500, segmentIndex: 2 },
-        { name: "ফাঁকা", type: 'empty', segmentIndex: 3, nameBangla: "ফাঁকা" },
-        { name: "৩টি ইঙ্গিত", type: 'hints', value: 3, segmentIndex: 4 }
-    ];
-
-    // --- Audio Elements ---
-    // Ensure win.mp3, button.mp3, and error.mp3 are in the same directory or provide correct path
-    const buttonClickSound = new Audio('Sound.mp3');
-    const winSound = new Audio('Win.mp3');
-    const errorSound = new Audio('error.mp3');
-
-
-    function playSound(audioElement) {
-        if (audioElement) {
-            audioElement.currentTime = 0; 
-            audioElement.play().catch(error => console.warn("Error playing sound:", error)); 
+            dataChannel.onmessage = event => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'pos') {
+                    otherPlayer.x = data.x;
+                    otherPlayer.y = data.y;
+                }
+                if (data.type === 'bullet') {
+                    otherPlayer.bullets.push({ x: data.x, y: data.y, width: 5, height: 5 });
+                }
+                if (data.type === 'hit') {
+                    thisPlayer.health -= 10;
+                }
+            };
         }
-    }
-
-
-    function shuffleArray(array) {
-        let newArray = [...array];
-        for (let i = newArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-        }
-        return newArray;
-    }
-
-    function initializeGameState() {
-        const savedHints = localStorage.getItem(LS_HINTS_KEY);
-        totalHints = savedHints !== null ? parseInt(savedHints, 10) : 2;
-
-        const savedScore = localStorage.getItem(LS_SCORE_KEY);
-        score = savedScore !== null ? parseInt(savedScore, 10) : 0;
-
-        localStorage.setItem(LS_HINTS_KEY, totalHints);
-        localStorage.setItem(LS_SCORE_KEY, score);
-
-        currentLevel = 1;
-        correctAnswersInLevel = 0;
-        usedWordIndices = [];
-        freeHintUsedThisWord = false;
-    }
-
-    function updateUI() {
-        levelDisplay.textContent = `লেভেল: ${currentLevel}`;
-        scoreDisplay.textContent = `পয়েন্ট: ${score}`;
-        hintsDisplay.textContent = `💡 ইঙ্গিত: ${totalHints}`;
-
-        localStorage.setItem(LS_HINTS_KEY, totalHints);
-        localStorage.setItem(LS_SCORE_KEY, score);
-
-        const wordCompletedOrNoWord = !currentWordData || (currentWordData && selectedParts.length >= currentWordData.parts.length);
-        const noMoreQuestions = availableQuestions.length === 0 && wordCompletedOrNoWord;
-
-        buyHintsButton.disabled = score < HINT_COST || isWaiting;
-        hintButton.disabled = totalHints <= 0 || wordCompletedOrNoWord || noMoreQuestions || isWaiting;
-        freeHintButton.disabled = freeHintUsedThisWord || wordCompletedOrNoWord || noMoreQuestions || isWaiting;
-        backspaceButton.disabled = selectedParts.length === 0 || wordCompletedOrNoWord || noMoreQuestions || isWaiting;
-        reloadGameButton.disabled = isWaiting && currentWordData != null && spinWheelModal.style.display === 'none';
-    }
-
-    function showGameMessage(text, type = '') {
-        messageArea.textContent = text;
-        messageArea.className = type;
-         if (type !== 'correct' && type !== 'level-up' && type !== 'incorrect') {
-              setTimeout(() => {
-                   if (messageArea.textContent === text) { 
-                       showGameMessage("", "");
-                   }
-              }, type === 'info' ? 6000 : 4000); 
-          }
-    }
-
-    function filterQuestionsForLevel() {
-        if (typeof wordData === 'undefined' || wordData.length === 0) {
-            console.error("wordData is not defined or empty. Make sure data.js is loaded correctly.");
-            availableQuestions = [];
-            return;
-        }
-        let potentialQuestions = wordData.filter((q, index) =>
-            q.minLevel <= currentLevel && !usedWordIndices.includes(index)
-        );
-        if (potentialQuestions.length > 1 && lastPlayedWordObject !== null) {
-            const tempFiltered = potentialQuestions.filter(q => q.word !== lastPlayedWordObject.word);
-            if (tempFiltered.length > 0) potentialQuestions = tempFiltered;
-        }
-        availableQuestions = potentialQuestions;
-    }
-
-    function loadQuestion() {
-        lastPlayedWordObject = currentWordData;
-        isWaiting = true;
-        freeHintUsedThisWord = false;
-
-        filterQuestionsForLevel();
-
-        if (availableQuestions.length === 0) {
-             if (typeof wordData !== 'undefined' && usedWordIndices.length === wordData.length) {
-                showGameMessage("দারুণ! আপনি সব শব্দ সাজিয়ে ফেলেছেন!", "level-up");
-            } else {
-                showGameMessage("এই লেভেলের জন্য আর কোনো নতুন শব্দ নেই অথবা সব শব্দ শেষ।", "info");
-            }
-            jumbledTilesContainer.innerHTML = "";
-            inputDisplay.textContent = "সমাপ্ত";
-            currentWordData = null;
-            isWaiting = false;
-            updateUI();
-            return;
-        }
-
-        const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-        currentWordData = availableQuestions[randomIndex];
-         if (typeof wordData !== 'undefined') {
-            currentQuestionIndex = wordData.findIndex(q => q.word === currentWordData.word && q.parts.join('') === currentWordData.parts.join(''));
-        }
-
-
-        jumbledParts = shuffleArray(currentWordData.parts);
-        selectedParts = [];
-        partTiles = [];
-
-        renderTiles();
-        updateInputDisplay();
-        showGameMessage("", "");
-        isWaiting = false;
-        updateUI();
-    }
-
-    function renderTiles() {
-        jumbledTilesContainer.innerHTML = '';
-        partTiles = [];
-        jumbledParts.forEach((part) => {
-            const tile = document.createElement('button');
-            tile.classList.add('tile');
-            tile.textContent = part;
-            tile.onclick = () => handleTileClick(part, tile);
-            jumbledTilesContainer.appendChild(tile);
-            partTiles.push(tile);
-        });
-    }
-
-    function handleTileClick(part, tileElement) {
-        playSound(buttonClickSound);
-        if (isWaiting || tileElement.disabled || !currentWordData) return;
-        isWaiting = true;
-
-        tileElement.classList.add('disabled');
-        tileElement.disabled = true;
-        selectedParts.push({ part: part, tileElement: tileElement });
-        updateInputDisplay();
-
-        if (selectedParts.length === currentWordData.parts.length) {
-            checkWord();
-        } else {
-            isWaiting = false;
-        }
-        updateUI();
-    }
-
-    function updateInputDisplay() {
-        inputDisplay.textContent = selectedParts.map(item => item.part).join('');
-    }
-
-    function handleBackspace() {
-        playSound(buttonClickSound);
-        if (isWaiting || selectedParts.length === 0 || !currentWordData || (currentWordData && selectedParts.length >= currentWordData.parts.length)) {
-            return;
-        }
-        isWaiting = true;
-        const lastSelected = selectedParts.pop();
-        if (lastSelected && lastSelected.tileElement) {
-            lastSelected.tileElement.disabled = false;
-            lastSelected.tileElement.classList.remove('disabled');
-        }
-        updateInputDisplay();
-        showGameMessage("", "");
-        isWaiting = false;
-        updateUI();
-    }
-
-    function applyPaidHintLogic() {
-        const nextCorrectPartIndex = selectedParts.length;
-        const correctNextPart = currentWordData.parts[nextCorrectPartIndex];
-        let hintTileElement = null;
-        for (const tile of partTiles) {
-            if (tile.textContent === correctNextPart && !tile.disabled) {
-                hintTileElement = tile;
-                break;
-            }
-        }
-
-        if (hintTileElement) {
-            hintTileElement.classList.add('disabled');
-            hintTileElement.disabled = true;
-            selectedParts.push({ part: correctNextPart, tileElement: hintTileElement });
-            updateInputDisplay();
-            if (selectedParts.length === currentWordData.parts.length) {
-                checkWord();
-            } else {
-                isWaiting = false;
-            }
-            return true;
-        }
-        isWaiting = false;
-        return false;
-    }
-
-    function usePaidHint() {
-        playSound(buttonClickSound);
-        if (isWaiting || totalHints <= 0 || !currentWordData || selectedParts.length >= currentWordData.parts.length) {
-             if (totalHints <= 0) showGameMessage("আপনার কোনো ইঙ্গিত নেই। দোকান থেকে কিনুন!", "info");
-             else if (currentWordData && selectedParts.length >= currentWordData.parts.length) showGameMessage("শব্দ ইতিমধ্যে সম্পূর্ণ।", "info");
-             else if (!currentWordData) showGameMessage("এখন কোনো শব্দ নেই।", "info");
-             updateUI();
-             return;
-        }
-        isWaiting = true;
-        if (applyPaidHintLogic()) {
-            totalHints--;
-            showGameMessage("ইঙ্গিত প্রয়োগ করা হলো!", "info");
-        } else {
-            showGameMessage("উপযুক্ত ইঙ্গিত পাওয়া যায়নি!", "info");
-        }
-        updateUI();
-    }
-
-    function openFreeSpinModal() {
-        playSound(buttonClickSound);
-        if (isWaiting || !currentWordData || (currentWordData && selectedParts.length >= currentWordData.parts.length)) {
-            if (!currentWordData) showGameMessage("এখন কোনো শব্দ নেই।", "info");
-            else if (currentWordData && selectedParts.length >= currentWordData.parts.length) showGameMessage("শব্দ ইতিমধ্যে সম্পূর্ণ।", "info");
-            updateUI();
-            return;
-        }
-        if (freeHintUsedThisWord) {
-            showGameMessage("এই শব্দের জন্য ফ্রী স্পিন ইতিমধ্যে ব্যবহার করা হয়েছে।", "info");
-            updateUI();
-            return;
-        }
-
-        alert(`ফ্রী স্পিন পেতে, অনুগ্রহ করে একটি সংক্ষিপ্ত বিজ্ঞাপন দেখুন। বিজ্ঞাপনটি প্রায় ${AD_REQUIRED_VIEW_TIME_MS / 1000} সেকেন্ড দেখতে হবে। এর আগে গেমে ফিরে স্পিন করার চেষ্টা করলে স্পিন হবে না।`);
-
-        isWaiting = true;
-        updateUI(); 
-
-        const adStartTime = localStorage.getItem(AD_START_TIME_KEY);
-
-        if (adStartTime) {
-            const elapsedTime = Date.now() - parseInt(adStartTime, 10);
-            if (elapsedTime >= AD_REQUIRED_VIEW_TIME_MS) {
-                modalSpinActionButton.textContent = '✅ এখন স্পিন করুন!';
-                modalSpinActionButton.classList.add('proceed');
-                modalSpinActionButton.onclick = proceedWithActualSpin;
-                modalSpinActionButton.disabled = false;
-                spinResultMessage.innerHTML = `বিজ্ঞাপন দেখার জন্য ধন্যবাদ! <br><strong>এখন স্পিন করুন</strong> বাটনে চাপ দিয়ে স্পিন শুরু করুন।`;
-            } else {
-                const remainingTime = Math.ceil((AD_REQUIRED_VIEW_TIME_MS - elapsedTime) / 1000);
-                modalSpinActionButton.textContent = '🌀 নতুন করে এড দেখুন';
-                modalSpinActionButton.classList.remove('proceed');
-                modalSpinActionButton.onclick = initiateAdViewForSpin;
-                modalSpinActionButton.disabled = false;
-                spinResultMessage.innerHTML = `আপনাকে বিজ্ঞাপনটি আরও প্রায় ${remainingTime} সেকেন্ড দেখতে হবে। <br>এরপরে গেমে ফিরে "🎁 ফ্রী স্পিন" বাটনে চাপ দিন, অথবা এখনই নতুন করে এড দেখতে পারেন।`;
-            }
-        } else {
-            modalSpinActionButton.textContent = '🌀 এড দেখে স্পিন করুন';
-            modalSpinActionButton.classList.remove('proceed');
-            modalSpinActionButton.onclick = initiateAdViewForSpin;
-            modalSpinActionButton.disabled = false;
-            spinResultMessage.innerHTML = 'ফ্রী স্পিন পেতে, অনুগ্রহ করে একটি সংক্ষিপ্ত বিজ্ঞাপন দেখুন।<br>"এড দেখে স্পিন করুন" বাটনে চাপ দিন।';
-        }
-
-        spinWheelModal.style.display = 'flex';
-        const modalSegments = spinWheelModal.querySelectorAll('.wheel-segment');
-        modalSegments.forEach(seg => seg.classList.remove('highlighted', 'spinning-active'));
-    }
-
-    function initiateAdViewForSpin() {
-        playSound(buttonClickSound);
-        if (modalSpinActionButton.disabled) return;
-        modalSpinActionButton.disabled = true;
-
-        const adURL = 'https://www.profitableratecpm.com/frzvssq75h?key=576ae41d83bfb276b67e431d5ef5cd8e';
-        adWindowObject = window.open(adURL, '_blank');
-
-        if (!adWindowObject || adWindowObject.closed || typeof adWindowObject.closed == 'undefined') {
-            spinResultMessage.innerHTML = `পপ-আপ ব্লক করা হয়েছে। <br>অনুগ্রহ করে আপনার ব্রাউজারে এই সাইটের জন্য পপ-আপ সক্রিয় করুন এবং আবার চেষ্টা করুন।`;
-            modalSpinActionButton.disabled = false; 
-            return;
-        }
-
-        localStorage.setItem(AD_START_TIME_KEY, Date.now().toString());
-        spinWheelModal.style.display = 'none'; 
-        showGameMessage(`বিজ্ঞাপন নতুন ট্যাবে খোলা হয়েছে। অনুগ্রহ করে বিজ্ঞাপনটি প্রায় ${AD_REQUIRED_VIEW_TIME_MS / 1000} সেকেন্ড দেখুন। এর আগে গেমে ফিরে স্পিন করার চেষ্টা করলে স্পিন হবে না। <br>দেখা শেষে এই গেমে ফিরে "🎁 ফ্রী স্পিন" বাটনে চাপ দিন।`, "info");
         
-        isWaiting = false; 
-        updateUI(); 
-    }
-
-    function buyHints() {
-        playSound(buttonClickSound);
-        if (isWaiting) return;
-        if (score >= HINT_COST) {
-            isWaiting = true;
-            score -= HINT_COST;
-            totalHints += HINTS_PER_PURCHASE;
-            showGameMessage(`আপনি ${HINTS_PER_PURCHASE}টি ইঙ্গিত কিনেছেন!`, "shop");
-            updateUI();
-            setTimeout(() => { isWaiting = false; updateUI(); }, 300);
-        } else {
-            showGameMessage(`ইঙ্গিত কিনতে ${HINT_COST} পয়েন্ট প্রয়োজন।`, "incorrect");
-        }
-    }
-
-    function checkWord() {
-        if (!currentWordData) {
-            isWaiting = false;
-            updateUI();
-            return;
-        }
-
-        const formedWord = selectedParts.map(item => item.part).join('');
-        const isCorrect = formedWord === currentWordData.word;
-
-        if (isCorrect) {
-            playSound(winSound);
-            score += 5;
-            correctAnswersInLevel++;
-            if (currentQuestionIndex !== -1 && !usedWordIndices.includes(currentQuestionIndex)) {
-                usedWordIndices.push(currentQuestionIndex);
-            }
-            showGameMessage("সঠিক! 😊", "correct");
+        async function createOffer() {
+            isHost = true;
+            thisPlayer = player1;
+            otherPlayer = player2;
+            setupPeerConnection();
+            if (!peerConnection) return;
             
-            gameContainer.classList.add('game-container-victory');
-            setTimeout(() => {
-                gameContainer.classList.remove('game-container-victory');
-            }, 1000); 
+            dataChannel = peerConnection.createDataChannel('game');
+            setupDataChannel();
+            
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
 
-            partTiles.forEach(tile => tile.disabled = true);
-            const delay = 1200;
-            if (correctAnswersInLevel >= 3) {
-                setTimeout(levelUp, delay);
-            } else {
-                setTimeout(loadQuestion, delay);
-            }
-        } else {
-            score -= 5;
-            if (score < 0) score = 0;
-            handleGameOver(); // This will now play error sound and show angry emoji
+            // *** IMPORTANT CHANGE HERE ***
+            // Show the offer immediately without waiting for all ICE candidates
+            document.getElementById('offer').value = JSON.stringify(peerConnection.localDescription);
+            statusEl.innerText = "Offer created. Copy it and send to the other player.";
         }
-        updateUI();
-    }
 
-    function handleGameOver() {
-        playSound(errorSound);
-        showGameMessage("দুঃখিত, ভুল উত্তর! 😠 গেমটি লেভেল ১ থেকে শুরু হচ্ছে। আপনার পয়েন্ট ও ইঙ্গিত সংরক্ষিত আছে।", "incorrect");
+        async function joinGame() {
+            if (!isHost) {
+                thisPlayer = player2;
+                otherPlayer = player1;
+            }
+            setupPeerConnection();
+            if (!peerConnection) return;
+
+            const offerText = document.getElementById('answer').value;
+            if (!offerText.trim()) {
+                statusEl.innerText = "Please paste the Offer code first.";
+                return;
+            }
+
+            const offer = JSON.parse(offerText);
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            
+            // *** IMPORTANT CHANGE HERE ***
+            // Show the answer immediately
+            document.getElementById('answer').value = JSON.stringify(peerConnection.localDescription);
+            statusEl.innerText = "Answer created. Copy it and send back to the host.";
+        }
         
-        // Loser effect
-        gameContainer.classList.add('game-container-lose');
-        setTimeout(() => {
-            gameContainer.classList.remove('game-container-lose');
-        }, 1000); // Effect lasts for 1 second
-
-        currentLevel = 1;
-        correctAnswersInLevel = 0;
-        updateUI();
-        setTimeout(() => {
-             isWaiting = false;
-             loadQuestion();
-        }, 3000);
-    }
-
-    function levelUp() {
-        currentLevel++;
-        correctAnswersInLevel = 0;
-        showGameMessage(`দারুণ! লেভেল ${currentLevel}-এ স্বাগতম! 🎉`, "level-up");
-        setTimeout(loadQuestion, 1500);
-    }
-
-    function reloadGame() {
-        playSound(buttonClickSound);
-        if (isWaiting && currentWordData && spinWheelModal.style.display === 'none') {
-            showGameMessage("অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন...", "info");
-            return;
-        }
-        isWaiting = true;
-
-        initializeGameState(); 
-        localStorage.removeItem(AD_START_TIME_KEY); 
-
-        showGameMessage("গেম পুনরায় শুরু হচ্ছে...", "info");
-        jumbledTilesContainer.innerHTML = "";
-        inputDisplay.textContent = "";
-        currentWordData = null;
-        lastPlayedWordObject = null;
-
-        if(adWindowObject && !adWindowObject.closed) {
-            // adWindowObject.close(); 
-        }
-        adWindowObject = null;
-        spinWheelModal.style.display = 'none'; 
-
-        modalSpinActionButton.textContent = '🌀 এড দেখে স্পিন করুন';
-        modalSpinActionButton.classList.remove('proceed');
-        modalSpinActionButton.onclick = initiateAdViewForSpin;
-        modalSpinActionButton.disabled = false;
-
-        setTimeout(() => {
-            isWaiting = false;
-            loadQuestion(); 
-        }, 500);
-    }
-
-    function proceedWithActualSpin() {
-        playSound(buttonClickSound);
-        if (modalSpinActionButton.disabled) return;
-        modalSpinActionButton.disabled = true;
-        modalSpinActionButton.classList.remove('proceed');
-        spinResultMessage.textContent = 'স্পিন হচ্ছে...';
-        localStorage.removeItem(AD_START_TIME_KEY); 
-
-        let spinDuration = 2500;
-        let intervalTime = 80;
-        let cycles = Math.floor(spinDuration / intervalTime);
-        let currentSegmentIdx = 0;
-        let spinCount = 0;
-
-        const modalWheelSegments = spinWheelModal.querySelectorAll('.wheel-segment');
-
-        const spinAnimation = setInterval(() => {
-            modalWheelSegments.forEach(seg => seg.classList.remove('spinning-active'));
-            if (modalWheelSegments.length > 0 && modalWheelSegments[currentSegmentIdx % modalWheelSegments.length]) {
-                 modalWheelSegments[currentSegmentIdx % modalWheelSegments.length].classList.add('spinning-active');
+        async function confirmConnection() {
+            const answerText = document.getElementById('answer').value;
+             if (!answerText.trim() || !peerConnection) {
+                statusEl.innerText = "Please create an offer and paste the answer first.";
+                return;
             }
-            currentSegmentIdx++;
-            spinCount++;
-
-            if (spinCount >= cycles) {
-                clearInterval(spinAnimation);
-                selectFinalPrize(modalWheelSegments);
+            const answer = JSON.parse(answerText);
+            if (peerConnection.signalingState !== 'have-local-offer') {
+                statusEl.innerText = "Connection Error: Invalid state for setting remote answer.";
+                return;
             }
-        }, intervalTime);
-    }
-
-    function selectFinalPrize(segmentsToHighlight) {
-        const randomIndex = Math.floor(Math.random() * prizes.length);
-        const wonPrize = prizes[randomIndex];
-
-        segmentsToHighlight.forEach(seg => seg.classList.remove('spinning-active'));
-        if (wonPrize.segmentIndex < segmentsToHighlight.length && segmentsToHighlight[wonPrize.segmentIndex]) {
-             segmentsToHighlight[wonPrize.segmentIndex].classList.add('highlighted');
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         }
 
-        let message = `আপনি জিতেছেন: ${wonPrize.name}!`;
-        let gameMessageType = 'info'; 
-
-        if (wonPrize.type === 'points') {
-            score += wonPrize.value;
-            gameMessageType = 'shop';
-        } else if (wonPrize.type === 'hints') {
-            totalHints += wonPrize.value;
-            gameMessageType = 'info';
-        } else if (wonPrize.type === 'empty') {
-            message = `দুঃখিত, এবার কিছু পাননি। (${wonPrize.nameBangla || wonPrize.name})`;
-            gameMessageType = 'incorrect';
+        // --- The rest of the game logic (drawing, update, controls) remains the same ---
+        function drawPlayer(player) {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = 'red';
+            ctx.fillRect(player.x, player.y - 10, player.width, 5);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(player.x, player.y - 10, player.width * (player.health / 100), 5);
         }
 
-        spinResultMessage.textContent = message; 
-        showGameMessage(message, gameMessageType); 
-
-        freeHintUsedThisWord = true; 
-
-        setTimeout(() => {
-            spinWheelModal.style.display = 'none';
-            isWaiting = false; 
-            updateUI(); 
-
-            modalSpinActionButton.textContent = '🌀 এড দেখে স্পিন করুন';
-            modalSpinActionButton.classList.remove('proceed');
-            modalSpinActionButton.onclick = initiateAdViewForSpin;
-            modalSpinActionButton.disabled = false;
-
-            if(adWindowObject && !adWindowObject.closed){
-                // adWindowObject.close(); 
-            }
-            adWindowObject = null;
-        }, 2200);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof wordData === 'undefined') {
-            console.error("wordData is not defined. Make sure data.js is loaded before this script or included in the HTML.");
-            window.wordData = [];
-            showGameMessage("শব্দের ডেটা লোড হয়নি। অনুগ্রহ করে পৃষ্ঠাটি রিফ্রেশ করুন।", "incorrect");
+        function drawBullet(bullet, color) { ctx.fillStyle = color; ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height); }
+        
+        function update() {
+            thisPlayer.bullets.forEach((bullet, index) => {
+                bullet.x += isHost ? 5 : -5;
+                if (bullet.x > canvas.width || bullet.x < 0) thisPlayer.bullets.splice(index, 1);
+                if (bullet.x < otherPlayer.x + otherPlayer.width && bullet.x + bullet.width > otherPlayer.x && bullet.y < otherPlayer.y + otherPlayer.height && bullet.y + bullet.height > otherPlayer.y) {
+                    thisPlayer.bullets.splice(index, 1);
+                    dataChannel.send(JSON.stringify({ type: 'hit' }));
+                }
+            });
+            otherPlayer.bullets.forEach((bullet, index) => { bullet.x += isHost ? -5 : 5; if (bullet.x > canvas.width || bullet.x < 0) otherPlayer.bullets.splice(index, 1); });
+            if (player1.health <= 0 || player2.health <= 0) { alert(`Game Over! ${player1.health <= 0 ? 'Player 2' : 'Player 1'} wins!`); document.location.reload(); }
         }
 
-        initializeGameState();
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer(player1);
+            drawPlayer(player2);
+            player1.bullets.forEach(b => drawBullet(b, player1.color));
+            player2.bullets.forEach(b => drawBullet(b, player2.color));
+        }
+        
+        function gameLoop() { requestAnimationFrame(gameLoop); update(); draw(); }
+        
+        function sendPosition() { if (dataChannel && dataChannel.readyState === 'open') { dataChannel.send(JSON.stringify({ type: 'pos', x: thisPlayer.x, y: thisPlayer.y })); } }
 
-        reloadGameButton.onclick = reloadGame;
-        backspaceButton.onclick = handleBackspace;
-        freeHintButton.onclick = openFreeSpinModal; 
-        hintButton.onclick = usePaidHint;
-        buyHintsButton.onclick = buyHints;
-
-        modalSpinActionButton.onclick = initiateAdViewForSpin; 
-
-        loadQuestion(); 
-    });
-</script>
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const touch = e.touches[0]; const rect = canvas.getBoundingClientRect(); thisPlayer.x = touch.clientX - rect.left - thisPlayer.width / 2; thisPlayer.y = touch.clientY - rect.top - thisPlayer.height / 2; sendPosition(); });
+        shootBtn.addEventListener('click', () => { const bullet = { x: thisPlayer.x + (isHost ? thisPlayer.width : -5), y: thisPlayer.y + thisPlayer.height / 2 - 2.5, width: 5, height: 5, }; thisPlayer.bullets.push(bullet); if (dataChannel && dataChannel.readyState === 'open') { dataChannel.send(JSON.stringify({ type: 'bullet', x: bullet.x, y: bullet.y })); } });
+    </script>
 </body>
 </html>
