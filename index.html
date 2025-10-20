@@ -3,164 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Local Multiplayer Shooter</title>
+    <title>6-Digit Code Shooter</title>
     <style>
-        body { margin: 0; padding: 0; background-color: #000; color: #fff; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #gameCanvas { background-color: #111; border: 2px solid #fff; touch-action: none; }
-        #controls, #connection { margin-top: 10px; text-align: center; }
-        textarea { width: 90%; height: 60px; margin: 5px 0; }
-        button { padding: 10px 15px; font-size: 16px; cursor: pointer; }
+        body { margin: 0; padding: 0; background-color: #000; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .container { text-align: center; padding: 20px; }
+        input, button { padding: 12px 18px; font-size: 16px; border-radius: 8px; border: 1px solid #555; margin: 5px; }
+        input { background-color: #333; color: #fff; text-align: center; letter-spacing: 2px; }
+        button { cursor: pointer; background-color: #007BFF; color: white; border: none; }
+        button:hover { background-color: #0056b3; }
+        #gameCodeDisplay { font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #28a745; margin: 15px 0; }
+        #status { color: #ffc107; }
+        #gameCanvas, #shootBtn { display: none; }
         #shootBtn { position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; border-radius: 50%; background-color: red; color: white; font-size: 18px; border: 2px solid white; }
     </style>
 </head>
 <body>
 
-    <div id="connection">
-        <h3>WebRTC P2P Connection</h3>
-        <button onclick="createOffer()">Create Game</button>
-        <textarea id="offer" placeholder="Offer code will appear here..."></textarea>
+    <div id="connection" class="container">
+        <h3>P2P Shooter Game</h3>
+        <button onclick="createGame()">Create Game</button>
+        <div id="gameCodeDisplay"></div>
+        <hr style="width:80%; margin: 20px auto; border-color: #444;">
+        <input type="text" id="joinCodeInput" placeholder="Enter 6-Digit Code">
         <button onclick="joinGame()">Join Game</button>
-        <textarea id="answer" placeholder="Paste Offer here to create Answer, or paste Answer from peer here..."></textarea>
-        <button onclick="confirmConnection()">Confirm Connection</button>
         <p id="status">Status: Disconnected</p>
     </div>
 
-    <canvas id="gameCanvas" style="display:none;"></canvas>
-    <button id="shootBtn" style="display:none;">Shoot</button>
+    <canvas id="gameCanvas"></canvas>
+    <button id="shootBtn">Shoot</button>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
 
     <script>
+        // --- START: PASTE YOUR FIREBASE CONFIG HERE ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        // --- END: PASTE YOUR FIREBASE CONFIG HERE ---
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // Game Elements
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const shootBtn = document.getElementById('shootBtn');
         const connectionDiv = document.getElementById('connection');
         const statusEl = document.getElementById('status');
+        const gameCodeDisplay = document.getElementById('gameCodeDisplay');
         
         canvas.width = window.innerWidth * 0.95;
         canvas.height = window.innerHeight * 0.7;
-
+        
+        // WebRTC variables
         let peerConnection;
         let dataChannel;
-
+        let gameCode;
+        
+        // Player objects
         const player1 = { x: 50, y: canvas.height / 2, width: 30, height: 30, color: 'cyan', bullets: [], health: 100 };
         const player2 = { x: canvas.width - 80, y: canvas.height / 2, width: 30, height: 30, color: 'magenta', bullets: [], health: 100 };
         let thisPlayer = null;
         let otherPlayer = null;
         let isHost = false;
 
-        function setupPeerConnection() {
-            try {
-                peerConnection = new RTCPeerConnection({
-                    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-                });
+        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-                peerConnection.onicecandidate = event => {
-                    if (!event.candidate) {
-                        // When ICE gathering is complete, the description is fully formed.
-                        // We update the text area again to ensure it has all candidates.
-                        if (peerConnection.localDescription) {
-                            const descriptionText = JSON.stringify(peerConnection.localDescription);
-                            if (isHost) {
-                                document.getElementById('offer').value = descriptionText;
-                            } else {
-                                document.getElementById('answer').value = descriptionText;
-                            }
-                        }
-                    }
-                };
+        async function createGame() {
+            isHost = true;
+            thisPlayer = player1;
+            otherPlayer = player2;
+            gameCode = Math.floor(100000 + Math.random() * 900000).toString();
+            gameCodeDisplay.innerText = `Your Code: ${gameCode}`;
+            statusEl.innerText = "Creating game... Share the code!";
 
-                peerConnection.ondatachannel = event => {
-                    dataChannel = event.channel;
-                    setupDataChannel();
-                };
-            } catch (e) {
-                statusEl.innerText = "Error: WebRTC not supported or blocked in this browser.";
-                console.error("RTCPeerConnection error: ", e);
-            }
+            peerConnection = new RTCPeerConnection(servers);
+            dataChannel = peerConnection.createDataChannel('game');
+            setupDataChannelEvents();
+            
+            const gameRef = db.ref(`games/${gameCode}`);
+            await gameRef.set({ offer: null, answer: null, hostCandidates: [], clientCandidates: [] });
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    gameRef.child('hostCandidates').push(event.candidate.toJSON());
+                }
+            };
+            
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            await gameRef.child('offer').set({ sdp: offer.sdp, type: offer.type });
+
+            gameRef.child('answer').on('value', snapshot => {
+                if (snapshot.exists() && !peerConnection.currentRemoteDescription) {
+                    const answer = snapshot.val();
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                }
+            });
+
+            gameRef.child('clientCandidates').on('child_added', snapshot => {
+                const candidate = new RTCIceCandidate(snapshot.val());
+                peerConnection.addIceCandidate(candidate);
+            });
         }
 
-        function setupDataChannel() {
+        async function joinGame() {
+            isHost = false;
+            thisPlayer = player2;
+            otherPlayer = player1;
+            gameCode = document.getElementById('joinCodeInput').value;
+            if (!gameCode || gameCode.length !== 6) {
+                statusEl.innerText = "Please enter a valid 6-digit code.";
+                return;
+            }
+            statusEl.innerText = `Joining game ${gameCode}...`;
+
+            const gameRef = db.ref(`games/${gameCode}`);
+            const offerSnapshot = await gameRef.child('offer').get();
+            if (!offerSnapshot.exists()) {
+                statusEl.innerText = "Game code not found.";
+                return;
+            }
+
+            peerConnection = new RTCPeerConnection(servers);
+            peerConnection.ondatachannel = event => {
+                dataChannel = event.channel;
+                setupDataChannelEvents();
+            };
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    gameRef.child('clientCandidates').push(event.candidate.toJSON());
+                }
+            };
+            
+            const offer = offerSnapshot.val();
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            await gameRef.child('answer').set({ sdp: answer.sdp, type: answer.type });
+
+            gameRef.child('hostCandidates').on('child_added', snapshot => {
+                const candidate = new RTCIceCandidate(snapshot.val());
+                peerConnection.addIceCandidate(candidate);
+            });
+        }
+
+        function setupDataChannelEvents() {
             dataChannel.onopen = () => {
                 statusEl.innerText = "Status: Connected!";
                 connectionDiv.style.display = 'none';
                 canvas.style.display = 'block';
                 shootBtn.style.display = 'block';
+                db.ref(`games/${gameCode}`).remove(); // Clean up database
                 gameLoop();
             };
 
             dataChannel.onmessage = event => {
                 const data = JSON.parse(event.data);
-                if (data.type === 'pos') {
-                    otherPlayer.x = data.x;
-                    otherPlayer.y = data.y;
-                }
-                if (data.type === 'bullet') {
-                    otherPlayer.bullets.push({ x: data.x, y: data.y, width: 5, height: 5 });
-                }
-                if (data.type === 'hit') {
-                    thisPlayer.health -= 10;
-                }
+                if (data.type === 'pos') { otherPlayer.x = data.x; otherPlayer.y = data.y; }
+                if (data.type === 'bullet') { otherPlayer.bullets.push({ x: data.x, y: data.y, width: 5, height: 5 }); }
+                if (data.type === 'hit') { thisPlayer.health -= 10; }
             };
         }
-        
-        async function createOffer() {
-            isHost = true;
-            thisPlayer = player1;
-            otherPlayer = player2;
-            setupPeerConnection();
-            if (!peerConnection) return;
-            
-            dataChannel = peerConnection.createDataChannel('game');
-            setupDataChannel();
-            
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
 
-            // *** IMPORTANT CHANGE HERE ***
-            // Show the offer immediately without waiting for all ICE candidates
-            document.getElementById('offer').value = JSON.stringify(peerConnection.localDescription);
-            statusEl.innerText = "Offer created. Copy it and send to the other player.";
-        }
-
-        async function joinGame() {
-            if (!isHost) {
-                thisPlayer = player2;
-                otherPlayer = player1;
-            }
-            setupPeerConnection();
-            if (!peerConnection) return;
-
-            const offerText = document.getElementById('answer').value;
-            if (!offerText.trim()) {
-                statusEl.innerText = "Please paste the Offer code first.";
-                return;
-            }
-
-            const offer = JSON.parse(offerText);
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            
-            // *** IMPORTANT CHANGE HERE ***
-            // Show the answer immediately
-            document.getElementById('answer').value = JSON.stringify(peerConnection.localDescription);
-            statusEl.innerText = "Answer created. Copy it and send back to the host.";
-        }
-        
-        async function confirmConnection() {
-            const answerText = document.getElementById('answer').value;
-             if (!answerText.trim() || !peerConnection) {
-                statusEl.innerText = "Please create an offer and paste the answer first.";
-                return;
-            }
-            const answer = JSON.parse(answerText);
-            if (peerConnection.signalingState !== 'have-local-offer') {
-                statusEl.innerText = "Connection Error: Invalid state for setting remote answer.";
-                return;
-            }
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        }
-
-        // --- The rest of the game logic (drawing, update, controls) remains the same ---
+        // --- Game logic and drawing functions (unchanged) ---
         function drawPlayer(player) {
             ctx.fillStyle = player.color;
             ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -169,9 +188,7 @@
             ctx.fillStyle = 'green';
             ctx.fillRect(player.x, player.y - 10, player.width * (player.health / 100), 5);
         }
-
         function drawBullet(bullet, color) { ctx.fillStyle = color; ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height); }
-        
         function update() {
             thisPlayer.bullets.forEach((bullet, index) => {
                 bullet.x += isHost ? 5 : -5;
@@ -184,7 +201,6 @@
             otherPlayer.bullets.forEach((bullet, index) => { bullet.x += isHost ? -5 : 5; if (bullet.x > canvas.width || bullet.x < 0) otherPlayer.bullets.splice(index, 1); });
             if (player1.health <= 0 || player2.health <= 0) { alert(`Game Over! ${player1.health <= 0 ? 'Player 2' : 'Player 1'} wins!`); document.location.reload(); }
         }
-
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawPlayer(player1);
@@ -192,11 +208,8 @@
             player1.bullets.forEach(b => drawBullet(b, player1.color));
             player2.bullets.forEach(b => drawBullet(b, player2.color));
         }
-        
         function gameLoop() { requestAnimationFrame(gameLoop); update(); draw(); }
-        
         function sendPosition() { if (dataChannel && dataChannel.readyState === 'open') { dataChannel.send(JSON.stringify({ type: 'pos', x: thisPlayer.x, y: thisPlayer.y })); } }
-
         canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const touch = e.touches[0]; const rect = canvas.getBoundingClientRect(); thisPlayer.x = touch.clientX - rect.left - thisPlayer.width / 2; thisPlayer.y = touch.clientY - rect.top - thisPlayer.height / 2; sendPosition(); });
         shootBtn.addEventListener('click', () => { const bullet = { x: thisPlayer.x + (isHost ? thisPlayer.width : -5), y: thisPlayer.y + thisPlayer.height / 2 - 2.5, width: 5, height: 5, }; thisPlayer.bullets.push(bullet); if (dataChannel && dataChannel.readyState === 'open') { dataChannel.send(JSON.stringify({ type: 'bullet', x: bullet.x, y: bullet.y })); } });
     </script>
