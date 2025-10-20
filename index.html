@@ -222,12 +222,16 @@
             return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
         }
 
+        // --- START: UPDATED update() FUNCTION ---
         function update() {
             if (gameState.isOver) return;
-            // Update bullets
+
+            // Update thisPlayer's bullets
             thisPlayer.bullets.forEach((bullet, bIndex) => {
                 bullet.x += isHost ? 7 : -7;
-                if (bullet.x > elements.canvas.width || bullet.x < 0) { thisPlayer.bullets.splice(bIndex, 1); }
+                if (bullet.x > elements.canvas.width || bullet.x < 0) {
+                    thisPlayer.bullets.splice(bIndex, 1);
+                }
                 // Bullet-Player collision
                 if (detectCollision(bullet, otherPlayer)) {
                     thisPlayer.bullets.splice(bIndex, 1);
@@ -237,10 +241,28 @@
                 }
                 // Bullet-Obstacle collision
                 obstacles.forEach(obs => {
-                    if(detectCollision(bullet, obs)) { thisPlayer.bullets.splice(bIndex, 1); }
+                    if (detectCollision(bullet, obs)) {
+                        thisPlayer.bullets.splice(bIndex, 1);
+                    }
                 });
             });
-            otherPlayer.bullets.forEach(b => b.x += isHost ? -7 : 7);
+
+            // Update otherPlayer's bullets
+            otherPlayer.bullets.forEach((bullet, bIndex) => {
+                bullet.x += isHost ? -7 : 7;
+                
+                // Remove if it goes off-screen
+                if (bullet.x > elements.canvas.width || bullet.x < 0) {
+                    otherPlayer.bullets.splice(bIndex, 1);
+                }
+                
+                // **THE FIX IS HERE**: Also check collision for other player's bullets against obstacles
+                obstacles.forEach(obs => {
+                    if (detectCollision(bullet, obs)) {
+                        otherPlayer.bullets.splice(bIndex, 1);
+                    }
+                });
+            });
 
             // Check for game over
             if (gameState.player1.health <= 0 || gameState.player2.health <= 0) {
@@ -250,6 +272,7 @@
                 cancelAnimationFrame(animationFrameId);
             }
         }
+        // --- END: UPDATED update() FUNCTION ---
 
         function draw() {
             ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
@@ -298,7 +321,6 @@
             let newX = touch.clientX - rect.left - thisPlayer.width / 2;
             let newY = touch.clientY - rect.top - thisPlayer.height / 2;
 
-            // Collision check with canvas boundaries
             if (newX < 0) newX = 0;
             if (newX + thisPlayer.width > elements.canvas.width) newX = elements.canvas.width - thisPlayer.width;
             if (newY < 0) newY = 0;
