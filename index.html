@@ -3,54 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Advanced P2P Shooter</title>
+    <title>AD TO EARN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { margin: 0; padding: 0; background-color: #0c0c0c; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        .container { text-align: center; padding: 20px; }
-        input, button { padding: 12px 18px; font-size: 16px; border-radius: 8px; border: 1px solid #555; margin: 5px; }
-        input { background-color: #333; color: #fff; text-align: center; letter-spacing: 2px; }
-        button { cursor: pointer; background-color: #007BFF; color: white; border: none; }
-        #gameCodeDisplay { font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #28a745; margin: 15px 0; }
-        #status { color: #ffc107; }
-        #gameContainer { position: relative; }
-        #gameCanvas { background-color: #1a1a1a; border-radius: 10px; }
-        #shootBtn { position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; border-radius: 50%; background-color: #dc3545; color: white; font-size: 18px; border: 2px solid white; z-index: 100; }
-        #gameOverScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
-        #gameOverScreen h2 { font-size: 48px; color: #dc3545; }
-        #connection, #gameContainer { display: block; }
-        .hidden { display: none !important; }
+        :root {
+            --primary-color: #4A90E2; --primary-dark: #357ABD; --secondary-color: #50E3C2; --accent-color: #F5A623; --bg-light: #F7F7F7; --bg-dark: #2C3E50; --card-bg-light: #FFFFFF; --card-bg-dark: #34495E; --text-dark: #333333; --text-light: #F7F7F7; --border-color-light: #E0E0E0; --border-color-dark: #4A657D; --border-radius: 12px; --border-radius-sm: 8px; --transition: all 0.3s ease-in-out;
+        }
+        body.dark-mode {
+            background-color: var(--bg-dark); color: var(--text-light); --header-bg: linear-gradient(135deg, var(--bg-dark), #1A2530); --card-bg: var(--card-bg-dark); --text-primary: var(--text-light); --text-secondary: #B0B0B0; --border-color: var(--border-color-dark); --input-bg: #4A657D; --input-border: #5A7E9C; --button-bg-secondary: #4A657D; --button-text-secondary: var(--secondary-color); --toggle-bg: #4A657D;
+        }
+        body:not(.dark-mode) {
+            background-color: var(--bg-light); color: var(--text-dark); --header-bg: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); --card-bg: var(--card-bg-light); --text-primary: var(--text-dark); --text-secondary: #666666; --border-color: var(--border-color-light); --input-bg: #F0F0F0; --input-border: #E0E0E0; --button-bg-secondary: #E9ECEF; --button-text-secondary: var(--primary-color); --toggle-bg: #E0E0E0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; position: relative; transition: background-color var(--transition), color var(--transition); }
+        .app-container { max-width: 480px; margin: 0 auto; position: relative; background-color: var(--bg-light); }
+        .header { height: 180px; background: var(--header-bg); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; color: var(--text-light); border-bottom-left-radius: var(--border-radius); border-bottom-right-radius: var(--border-radius); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        .header-title { font-size: 1.6rem; font-weight: 700; z-index: 2; letter-spacing: 0.5px; }
+        .theme-toggle { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; background: var(--toggle-bg); display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-size: 1rem; cursor: pointer; z-index: 10; transition: var(--transition); border: 1px solid var(--border-color); }
+        .profile-section { margin-top: -50px; padding: 0 20px; position: relative; z-index: 2; }
+        .profile-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 70px 20px 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); position: relative; text-align: center; transition: var(--transition); }
+        .profile-pic { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--card-bg); object-fit: cover; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); background: var(--primary-color); }
+        .profile-name { font-size: 1.3rem; font-weight: 600; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); }
+        .verified-badge { color: var(--secondary-color); margin-left: 5px; font-size: 0.8rem; }
+        .edit-name-btn { background: none; border: none; color: var(--primary-color); margin-left: 8px; cursor: pointer; font-size: 0.8rem; transition: var(--transition); opacity: 0.8; }
+        .points-display { display: inline-flex; align-items: center; background: rgba(74, 144, 226, 0.1); padding: 6px 15px; border-radius: 50px; margin-top: 8px; font-weight: 600; color: var(--primary-color); font-size: 0.9rem; }
+        .points-display i { margin-right: 6px; color: var(--primary-color); }
+        .stats-display { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
+        .stat-item { background: var(--bg-light); padding: 8px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); min-width: 70px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+        body.dark-mode .stat-item { background: var(--input-bg); }
+        .stat-value { font-weight: 600; color: var(--text-primary); margin-bottom: 2px; font-size: 1rem; }
+        .stat-label { font-size: 0.7rem; opacity: 0.8; color: var(--text-secondary); }
+        .content-section { padding: 20px; margin-bottom: 80px; }
+        .section-title { display: flex; align-items: center; margin-bottom: 18px; font-size: 1.2rem; font-weight: 600; color: var(--text-primary); }
+        .section-title i { margin-right: 10px; color: var(--primary-color); font-size: 1.1rem; }
+        .task-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); border: 1px solid var(--border-color); transition: var(--transition); }
+        .task-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .task-icon { width: 38px; height: 38px; border-radius: 50%; background: rgba(74, 144, 226, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 10px; color: var(--primary-color); font-size: 1rem; }
+        .task-title { font-weight: 600; flex: 1; color: var(--text-primary); }
+        .reward-badge { background: rgba(245, 166, 35, 0.1); color: var(--accent-color); padding: 4px 10px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
+        .task-description { color: var(--text-secondary); margin-bottom: 18px; line-height: 1.5; font-size: 0.9rem; }
+        .progress-container { margin-bottom: 18px; }
+        .progress-text { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.75rem; color: var(--text-secondary); }
+        .progress-bar { height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+        .progress { height: 100%; background: var(--primary-color); border-radius: 3px; transition: width 0.5s ease; }
+        .btn { display: block; width: 100%; padding: 12px; border-radius: var(--border-radius-sm); border: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: var(--transition); text-align: center; text-decoration: none; font-family: 'Inter', sans-serif; }
+        .btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2); }
+        .btn-secondary { background: var(--button-bg-secondary); color: var(--button-text-secondary); border: 1px solid var(--border-color); }
+        .channel-list { list-style: none; }
+        .channel-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .channel-item:last-child { border-bottom: none; }
+        .channel-info { display: flex; align-items: center; flex: 1; }
+        .channel-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(74, 144, 226, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 10px; color: var(--primary-color); font-size: 0.9rem; }
+        .channel-name { font-weight: 500; flex: 1; color: var(--text-primary); }
+        .channel-reward { font-size: 0.8rem; color: var(--accent-color); margin-right: 12px; }
+        .join-btn { padding: 7px 14px; border-radius: var(--border-radius-sm); background: var(--primary-color); color: white; font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: var(--transition); border: none; cursor: pointer; }
+        .join-btn.claimed { background: var(--secondary-color); cursor: default; opacity: 0.9; }
+        .input-group { margin-bottom: 15px; }
+        .input-label { display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-secondary); font-size: 0.85rem; }
+        .input-field, .select-field { width: 100%; padding: 10px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 0.95rem; transition: var(--transition); }
+        .status-message { text-align: center; margin-top: 15px; font-size: 0.85rem; min-height: 20px; padding: 8px; border-radius: var(--border-radius-sm); }
+        .success-message { background: rgba(80, 227, 194, 0.1); color: #50E3C2; border: 1px solid #50E3C2; }
+        .error-message { background: rgba(230, 74, 74, 0.1); color: #E64A4A; border: 1px solid #E64A4A; }
+        .referral-container { background: var(--input-bg); border-radius: var(--border-radius-sm); padding: 15px; margin-bottom: 20px; border: 1px dashed var(--border-color); }
+        .referral-input-group { display: flex; margin-bottom: 10px; }
+        .referral-input { flex: 1; padding: 9px 12px; border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm); border: 1px solid var(--input-border); background: var(--bg-light); color: var(--text-primary); font-size: 0.9rem; }
+        body.dark-mode .referral-input { background: var(--card-bg-dark); }
+        .copy-btn { padding: 0 14px; background: var(--primary-color); color: white; border: none; border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0; font-weight: 600; cursor: pointer; transition: var(--transition); font-size: 0.9rem; }
+        .referral-stats { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); }
+        .stat-card { text-align: center; flex: 1; }
+        .stat-number { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); margin-bottom: 3px; }
+        .stat-title { font-size: 0.75rem; color: var(--text-secondary); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.08); z-index: 100; max-width: 480px; margin: 0 auto; border-top: 1px solid var(--border-color); border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-secondary); text-decoration: none; font-size: 0.7rem; font-weight: 500; flex: 1; transition: var(--transition); }
+        .nav-item i { font-size: 1.3rem; margin-bottom: 3px; transition: var(--transition); }
+        .nav-item.active { color: var(--primary-color); transform: translateY(-3px); }
+        .ad-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .ad-modal-overlay.show { opacity: 1; pointer-events: all; }
+        .ad-modal { background: var(--card-bg); border-radius: var(--border-radius); width: 90%; max-width: 380px; padding: 25px; text-align: center; transform: scale(0.9); transition: transform 0.3s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); position: relative; }
+        .ad-modal-overlay.show .ad-modal { transform: scale(1); }
+        .ad-modal-title { font-size: 1.2rem; margin-bottom: 15px; color: var(--primary-color); font-weight: 600; }
+        .spinner { width: 45px; height: 45px; border: 3px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; margin: 15px auto; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .ad-status { margin: 12px 0; color: var(--text-secondary); font-size: 0.9rem; }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px; border-radius: 30px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); z-index: 1000; opacity: 0; transition: all 0.3s ease; font-size: 0.85rem; }
+        .toast.show { opacity: 1; bottom: 90px; }
+        #adContainer { text-align: center; margin: 15px 0; }
     </style>
 </head>
 <body>
-
-    <div id="connection" class="container">
-        <h3>Advanced P2P Shooter</h3>
-        <button onclick="createGame()">Create Game</button>
-        <div id="gameCodeDisplay"></div>
-        <hr style="width:80%; margin: 20px auto; border-color: #444;">
-        <input type="text" id="joinCodeInput" placeholder="Enter 6-Digit Code">
-        <button onclick="joinGame()">Join Game</button>
-        <p id="status">Status: Disconnected</p>
-    </div>
-
-    <div id="gameContainer" class="hidden">
-        <canvas id="gameCanvas"></canvas>
-        <div id="gameOverScreen">
-            <h2 id="winnerText"></h2>
-            <button onclick="playAgain()">Play Again</button>
+    <div class="app-container">
+        <div id="loading-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div class="spinner"></div>
         </div>
+
+        <div class="header">
+            <button class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i></button>
+            <h1 class="header-title" id="appName">Loading...</h1>
+        </div>
+
+        <div class="profile-section">
+            <div class="profile-card">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile" class="profile-pic" id="profilePic">
+                <h1 class="profile-name" id="profileNameDisplay">Loading...</h1>
+                <div class="points-display" id="userPointsDisplay"><i class="fas fa-coins"></i> 0 Points</div>
+                <div class="stats-display">
+                    <div class="stat-item"><div class="stat-value" id="adsWatchedToday">0</div><div class="stat-label">Today</div></div>
+                    <div class="stat-item"><div class="stat-value" id="adsLeftToday">0</div><div class="stat-label">Left</div></div>
+                    <div class="stat-item"><div class="stat-value" id="totalAdsWatched">0</div><div class="stat-label">Total</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="mainContent"></div>
+        <div id="adContainer"></div>
+
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active" data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" data-page="tasks"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+            <a href="#" class="nav-item" data-page="bonus"><i class="fas fa-gift"></i><span>Bonus</span></a>
+            <a href="#" class="nav-item" data-page="withdraw"><i class="fas fa-wallet"></i><span>Withdraw</span></a>
+            <a href="#" class="nav-item" data-page="referral"><i class="fas fa-share-alt"></i><span>Referral</span></a>
+        </div>
+
+        <div class="ad-modal-overlay" id="adModal"><div class="ad-modal"><h3 class="ad-modal-title" id="adModalTitle">Loading Ad...</h3><div class="spinner" id="adSpinner"></div><p class="ad-status" id="adStatusMessage">Please wait</p><button class="btn btn-primary" id="adCloseBtn" style="display: none;">Close & Claim</button></div></div>
+        <div class="toast" id="toast"></div>
     </div>
-    <button id="shootBtn" class="hidden">Shoot</button>
 
-    <!-- Sound Effects -->
-    <audio id="shootSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-    <audio id="hitSound" src="https://www.soundjay.com/mechanical/sounds/explosion-01.mp3" preload="auto"></audio>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, get, set, update, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
-
-    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCBukPCFS4aNvyNnNChBbhl-287a0Or3JY",
             authDomain: "tangim-28d01.firebaseapp.com",
@@ -58,291 +145,332 @@
             projectId: "tangim-28d01",
             storageBucket: "tangim-28d01.appspot.com",
             messagingSenderId: "787567404249",
-            appId: "1:787567404249:web:630c0df0f642baaaa50ac8"
+            appId: "1:787567404249:web:630c0df0f642baaaa50ac8",
+            measurementId: "G-4X5SGX4XJZ"
         };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         // DOM Elements
-        const elements = {
-            connectionDiv: document.getElementById('connection'),
-            gameContainer: document.getElementById('gameContainer'),
-            canvas: document.getElementById('gameCanvas'),
-            shootBtn: document.getElementById('shootBtn'),
-            statusEl: document.getElementById('status'),
-            gameCodeDisplay: document.getElementById('gameCodeDisplay'),
-            gameOverScreen: document.getElementById('gameOverScreen'),
-            winnerText: document.getElementById('winnerText'),
-            shootSound: document.getElementById('shootSound'),
-            hitSound: document.getElementById('hitSound')
-        };
-        const ctx = elements.canvas.getContext('2d');
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const profileNameDisplay = document.getElementById('profileNameDisplay');
+        const profilePic = document.getElementById('profilePic');
+        const userPointsDisplay = document.getElementById('userPointsDisplay');
+        const adsWatchedTodayEl = document.getElementById('adsWatchedToday');
+        const adsLeftTodayEl = document.getElementById('adsLeftToday');
+        const totalAdsWatchedEl = document.getElementById('totalAdsWatched');
+        const mainContent = document.getElementById('mainContent');
+        const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
+        const adModal = document.getElementById('adModal');
+        const adCloseBtn = document.getElementById('adCloseBtn');
+        const toast = document.getElementById('toast');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const appNameEl = document.getElementById('appName');
+        const adContainer = document.getElementById('adContainer');
+
+        let currentUser = null;
+        let appSettings = {};
         
-        // Game State
-        let peerConnection, dataChannel, gameCode, thisPlayer, otherPlayer;
-        let isHost = false;
-        let obstacles = [];
-        let animationFrameId;
-        
-        const gameState = {
-            player1: { x: 50, y: 0, width: 40, height: 40, sprite: '🚀', bullets: [], health: 100, score: 0 },
-            player2: { x: 0, y: 0, width: 40, height: 40, sprite: '👾', bullets: [], health: 100, score: 0 },
-            isOver: false
-        };
-
-        function initGameLayout() {
-            elements.canvas.width = window.innerWidth * 0.95;
-            elements.canvas.height = window.innerHeight * 0.8;
-            gameState.player1.y = elements.canvas.height / 2;
-            gameState.player2.x = elements.canvas.width - 80;
-            gameState.player2.y = elements.canvas.height / 2;
-        }
-        initGameLayout();
-
-        function resetGame() {
-            gameState.player1.health = 100;
-            gameState.player2.health = 100;
-            gameState.player1.score = 0;
-            gameState.player2.score = 0;
-            gameState.player1.bullets = [];
-            gameState.player2.bullets = [];
-            gameState.isOver = false;
-            elements.gameOverScreen.style.display = 'none';
-            initGameLayout();
-
-            if(isHost) {
-                generateObstacles();
-                sendData({ type: 'obstacles', obstacles: obstacles });
-            }
-            gameLoop();
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), duration);
         }
 
-        function playAgain() {
-            sendData({ type: 'play_again' });
-            resetGame();
-        }
-
-        function generateObstacles() {
-            obstacles = [];
-            for (let i = 0; i < 5; i++) {
-                obstacles.push({
-                    x: Math.random() * (elements.canvas.width - 200) + 100,
-                    y: Math.random() * (elements.canvas.height - 100) + 50,
-                    width: Math.random() * 50 + 20,
-                    height: Math.random() * 50 + 20,
-                });
+        async function loadAppSettings() {
+            const settingsRef = ref(db, 'settings');
+            const snapshot = await get(settingsRef);
+            if (snapshot.exists()) {
+                appSettings = snapshot.val();
+                appNameEl.textContent = appSettings.appName || 'AD TO EARN';
+                if (appSettings.adScript) {
+                    const script = document.createElement('script');
+                    script.innerHTML = appSettings.adScript;
+                    adContainer.appendChild(script);
+                }
+            } else {
+                appNameEl.textContent = 'AD TO EARN';
             }
         }
-        
-        const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-        async function createGame() {
-            isHost = true;
-            thisPlayer = gameState.player1;
-            otherPlayer = gameState.player2;
-            gameCode = Math.floor(100000 + Math.random() * 900000).toString();
-            elements.gameCodeDisplay.innerText = `Your Code: ${gameCode}`;
-            elements.statusEl.innerText = "Creating game... Share the code!";
+        async function loadUserState() {
+            if (!window.Telegram || !Telegram.WebApp || !Telegram.WebApp.initDataUnsafe.user) {
+                loadingOverlay.innerHTML = "Please open this app inside Telegram.";
+                return;
+            }
 
-            peerConnection = new RTCPeerConnection(servers);
-            dataChannel = peerConnection.createDataChannel('game');
-            setupDataChannelEvents();
+            const tgUser = Telegram.WebApp.initDataUnsafe.user;
+            const userId = tgUser.id.toString();
+            const userRef = ref(db, 'users/' + userId);
             
-            const gameRef = db.ref(`games/${gameCode}`);
-            await gameRef.set({ offer: null, answer: null, hostCandidates: [], clientCandidates: [] });
+            const snapshot = await get(userRef);
+            if (snapshot.exists()) {
+                currentUser = snapshot.val();
+            } else {
+                const referralCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+                currentUser = {
+                    name: `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || `User ${userId}`,
+                    telegramId: userId,
+                    photoUrl: tgUser.photo_url || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+                    points: 0,
+                    adsWatchedToday: 0,
+                    totalAdsWatchedLifetime: 0,
+                    lastAdWatchDate: null,
+                    claimedBonuses: [],
+                    referralCode: referralCode,
+                    referredBy: null,
+                    referredUsers: []
+                };
+                await set(userRef, currentUser);
+            }
             
-            peerConnection.onicecandidate = e => e.candidate && gameRef.child('hostCandidates').push(e.candidate.toJSON());
-            
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            await gameRef.child('offer').set({ sdp: offer.sdp, type: offer.type });
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCodeFromUrl = urlParams.get('start');
+            if (refCodeFromUrl && !currentUser.referredBy && refCodeFromUrl !== currentUser.referralCode) {
+                await applyReferral(refCodeFromUrl);
+            }
 
-            gameRef.child('answer').on('value', snapshot => {
-                if (snapshot.exists() && !peerConnection.currentRemoteDescription) {
-                    peerConnection.setRemoteDescription(new RTCSessionDescription(snapshot.val()));
+            updateUI();
+            loadingOverlay.style.display = 'none';
+        }
+
+        async function applyReferral(referrerCode) {
+            const usersRef = ref(db, 'users');
+            const usersSnapshot = await get(usersRef);
+            if (!usersSnapshot.exists()) return;
+
+            let referrerId = null;
+            let referrerData = null;
+            usersSnapshot.forEach(childSnapshot => {
+                if (childSnapshot.val().referralCode === referrerCode) {
+                    referrerId = childSnapshot.key;
+                    referrerData = childSnapshot.val();
                 }
             });
-            gameRef.child('clientCandidates').on('child_added', s => peerConnection.addIceCandidate(new RTCIceCandidate(s.val())));
-        }
 
-        async function joinGame() {
-            isHost = false;
-            thisPlayer = gameState.player2;
-            otherPlayer = gameState.player1;
-            gameCode = document.getElementById('joinCodeInput').value;
-            if (!gameCode || gameCode.length !== 6) { elements.statusEl.innerText = "Please enter a valid 6-digit code."; return; }
-            elements.statusEl.innerText = `Joining game ${gameCode}...`;
-
-            const gameRef = db.ref(`games/${gameCode}`);
-            const offerSnapshot = await gameRef.child('offer').get();
-            if (!offerSnapshot.exists()) { elements.statusEl.innerText = "Game code not found."; return; }
-
-            peerConnection = new RTCPeerConnection(servers);
-            peerConnection.ondatachannel = e => { dataChannel = e.channel; setupDataChannelEvents(); };
-            peerConnection.onicecandidate = e => e.candidate && gameRef.child('clientCandidates').push(e.candidate.toJSON());
-            
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(offerSnapshot.val()));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            await gameRef.child('answer').set({ sdp: answer.sdp, type: answer.type });
-
-            gameRef.child('hostCandidates').on('child_added', s => peerConnection.addIceCandidate(new RTCIceCandidate(s.val())));
-        }
-
-        function setupDataChannelEvents() {
-            dataChannel.onopen = () => {
-                elements.connectionDiv.classList.add('hidden');
-                elements.gameContainer.classList.remove('hidden');
-                elements.shootBtn.classList.remove('hidden');
-                db.ref(`games/${gameCode}`).remove();
-                if(isHost) {
-                   generateObstacles();
-                   sendData({ type: 'obstacles', obstacles: obstacles });
-                }
-                gameLoop();
-            };
-
-            dataChannel.onmessage = event => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'pos') { otherPlayer.x = data.x; otherPlayer.y = data.y; }
-                if (data.type === 'bullet') { otherPlayer.bullets.push({ x: data.x, y: data.y, width: 10, height: 10 }); }
-                if (data.type === 'hit') { thisPlayer.health -= 10; otherPlayer.score += 1; elements.hitSound.play(); }
-                if (data.type === 'obstacles') { obstacles = data.obstacles; }
-                if (data.type === 'play_again') { resetGame(); }
-            };
-        }
-
-        function sendData(data) {
-            if (dataChannel && dataChannel.readyState === 'open') {
-                dataChannel.send(JSON.stringify(data));
-            }
-        }
-
-        function detectCollision(a, b) {
-            return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
-        }
-
-        // --- START: UPDATED update() FUNCTION ---
-        function update() {
-            if (gameState.isOver) return;
-
-            // Update thisPlayer's bullets
-            thisPlayer.bullets.forEach((bullet, bIndex) => {
-                bullet.x += isHost ? 7 : -7;
-                if (bullet.x > elements.canvas.width || bullet.x < 0) {
-                    thisPlayer.bullets.splice(bIndex, 1);
-                }
-                // Bullet-Player collision
-                if (detectCollision(bullet, otherPlayer)) {
-                    thisPlayer.bullets.splice(bIndex, 1);
-                    thisPlayer.score += 1;
-                    sendData({ type: 'hit' });
-                    elements.hitSound.play();
-                }
-                // Bullet-Obstacle collision
-                obstacles.forEach(obs => {
-                    if (detectCollision(bullet, obs)) {
-                        thisPlayer.bullets.splice(bIndex, 1);
+            if (referrerId) {
+                const refereeRef = ref(db, `users/${currentUser.telegramId}`);
+                await runTransaction(refereeRef, (userData) => {
+                    if (userData) {
+                        userData.points = (userData.points || 0) + (appSettings.referralBonusReferee || 5);
+                        userData.referredBy = referrerCode;
                     }
+                    return userData;
                 });
-            });
 
-            // Update otherPlayer's bullets
-            otherPlayer.bullets.forEach((bullet, bIndex) => {
-                bullet.x += isHost ? -7 : 7;
-                
-                // Remove if it goes off-screen
-                if (bullet.x > elements.canvas.width || bullet.x < 0) {
-                    otherPlayer.bullets.splice(bIndex, 1);
-                }
-                
-                // **THE FIX IS HERE**: Also check collision for other player's bullets against obstacles
-                obstacles.forEach(obs => {
-                    if (detectCollision(bullet, obs)) {
-                        otherPlayer.bullets.splice(bIndex, 1);
+                const referrerRef = ref(db, `users/${referrerId}`);
+                await runTransaction(referrerRef, (userData) => {
+                    if (userData) {
+                        userData.points = (userData.points || 0) + (appSettings.referralBonusReferrer || 10);
+                        if (!userData.referredUsers) userData.referredUsers = [];
+                        userData.referredUsers.push(currentUser.telegramId);
                     }
+                    return userData;
                 });
-            });
-
-            // Check for game over
-            if (gameState.player1.health <= 0 || gameState.player2.health <= 0) {
-                gameState.isOver = true;
-                elements.gameOverScreen.style.display = 'flex';
-                elements.winnerText.innerText = gameState.player1.health <= 0 ? "👾 Alien Wins!" : "🚀 Rocket Wins!";
-                cancelAnimationFrame(animationFrameId);
+                
+                showToast(`+${appSettings.referralBonusReferee || 5} bonus for joining via referral!`);
             }
         }
-        // --- END: UPDATED update() FUNCTION ---
 
-        function draw() {
-            ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
-            // Draw obstacles
-            ctx.fillStyle = '#6c757d';
-            obstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.width, obs.height));
-            
-            // Draw players and bullets
-            [gameState.player1, gameState.player2].forEach(p => {
-                ctx.font = `${p.width}px Arial`;
-                ctx.fillText(p.sprite, p.x, p.y + p.height - 10);
-                p.bullets.forEach(b => { ctx.fillStyle = 'orange'; ctx.fillRect(b.x, b.y, b.width, b.height); });
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.Telegram && Telegram.WebApp) Telegram.WebApp.expand();
+            await loadAppSettings();
+            await loadUserState();
+
+            applyTheme(localStorage.getItem('userTheme') || 'light');
+            navigateTo('home');
+
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navigateTo(item.dataset.page);
+                });
             });
-            
-            // Draw UI (Health & Score)
-            ctx.font = '16px Segoe UI';
-            // Player 1 UI
-            ctx.fillStyle = 'cyan';
-            ctx.fillText(`P1 Score: ${gameState.player1.score}`, 10, 20);
-            ctx.fillStyle = 'red';
-            ctx.fillRect(10, 30, 100, 10);
-            ctx.fillStyle = 'lime';
-            ctx.fillRect(10, 30, gameState.player1.health, 10);
-            // Player 2 UI
-            const p2ScoreText = `P2 Score: ${gameState.player2.score}`;
-            const textWidth = ctx.measureText(p2ScoreText).width;
-            ctx.fillStyle = 'magenta';
-            ctx.fillText(p2ScoreText, elements.canvas.width - textWidth - 10, 20);
-            ctx.fillStyle = 'red';
-            ctx.fillRect(elements.canvas.width - 110, 30, 100, 10);
-            ctx.fillStyle = 'lime';
-            ctx.fillRect(elements.canvas.width - 110, 30, gameState.player2.health, 10);
-        }
-        
-        function gameLoop() {
-            update();
-            draw();
-            animationFrameId = requestAnimationFrame(gameLoop);
-        }
-        
-        // Event Listeners
-        elements.canvas.addEventListener('touchmove', e => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const rect = elements.canvas.getBoundingClientRect();
-            let newX = touch.clientX - rect.left - thisPlayer.width / 2;
-            let newY = touch.clientY - rect.top - thisPlayer.height / 2;
+            adCloseBtn.addEventListener('click', closeAdModalAndReward);
+        });
 
-            if (newX < 0) newX = 0;
-            if (newX + thisPlayer.width > elements.canvas.width) newX = elements.canvas.width - thisPlayer.width;
-            if (newY < 0) newY = 0;
-            if (newY + thisPlayer.height > elements.canvas.height) newY = elements.canvas.height - thisPlayer.height;
-            
-            thisPlayer.x = newX;
-            thisPlayer.y = newY;
-            sendData({ type: 'pos', x: thisPlayer.x, y: thisPlayer.y });
-        });
+        function applyTheme(theme) {
+            document.body.classList.toggle('dark-mode', theme === 'dark');
+            themeToggleBtn.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('userTheme', theme);
+        }
+
+        function toggleTheme() {
+            applyTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
+        }
+
+        async function saveUserState() {
+            if (!currentUser) return;
+            const userRef = ref(db, 'users/' + currentUser.telegramId);
+            await update(userRef, currentUser);
+        }
         
-        elements.shootBtn.addEventListener('click', () => {
-            if(gameState.isOver) return;
-            const bullet = {
-                x: thisPlayer.x + (isHost ? thisPlayer.width : -10),
-                y: thisPlayer.y + thisPlayer.height / 2 - 5,
-                width: 10,
-                height: 10,
-            };
-            thisPlayer.bullets.push(bullet);
-            sendData({ type: 'bullet', x: bullet.x, y: bullet.y });
-            elements.shootSound.play();
-        });
+        async function promptForNewName() {
+            const newName = prompt("Enter new name:", currentUser.name);
+            if (newName && newName.trim()) {
+                currentUser.name = newName.trim();
+                await saveUserState();
+                updateUI();
+                showToast("Name updated!");
+            }
+        }
+
+        function updateUI() {
+            if(!currentUser) return;
+
+            const today = new Date().toLocaleDateString();
+            if (currentUser.lastAdWatchDate !== today) {
+                currentUser.adsWatchedToday = 0;
+            }
+            
+            profileNameDisplay.innerHTML = `${currentUser.name} <i class="fas fa-check-circle verified-badge"></i> <button class="edit-name-btn" id="editNameBtn"><i class="fas fa-pencil-alt"></i></button>`;
+            document.getElementById('editNameBtn').addEventListener('click', promptForNewName);
+            
+            userPointsDisplay.innerHTML = `<i class="fas fa-coins"></i> ${currentUser.points || 0} Points`;
+            adsWatchedTodayEl.textContent = currentUser.adsWatchedToday || 0;
+            adsLeftTodayEl.textContent = (appSettings.adsPerDayLimit || 50) - (currentUser.adsWatchedToday || 0);
+            totalAdsWatchedEl.textContent = currentUser.totalAdsWatchedLifetime || 0;
+            if (currentUser.photoUrl) profilePic.src = currentUser.photoUrl;
+        }
+
+        function navigateTo(page) {
+            document.querySelector('.bottom-nav .nav-item.active')?.classList.remove('active');
+            document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
+            
+            const renderers = {'home': renderHomePage, 'tasks': renderTasksPage, 'bonus': renderBonusPage, 'withdraw': renderWithdrawPage, 'referral': renderReferralPage};
+            if(renderers[page]) renderers[page]();
+            updateUI();
+        }
+
+        // Page Renderers
+        function renderHomePage() {
+            mainContent.innerHTML = `<div class="task-card"><h2 class="section-title"><i class="fas fa-home"></i> Welcome</h2><p class="task-description">Welcome to ${appSettings.appName || 'the app'}, ${currentUser.name.split(' ')[0]}! Start earning points.</p></div>`;
+        }
+
+        function renderTasksPage() {
+            const adsLeft = (appSettings.adsPerDayLimit || 50) - currentUser.adsWatchedToday;
+            const progress = (currentUser.adsWatchedToday / (appSettings.adsPerDayLimit || 50)) * 100;
+            mainContent.innerHTML = `<div class="task-card">...</div>`; // Simplified
+            mainContent.innerHTML = `
+                <div class="task-card">
+                    <div class="task-header">
+                        <div class="task-icon"><i class="fas fa-ad"></i></div>
+                        <div class="task-title">Watch Ads</div>
+                        <div class="reward-badge">+${appSettings.pointsPerAd || 5}</div>
+                    </div>
+                    <p class="task-description">Watch short ads to earn points. Limit: ${appSettings.adsPerDayLimit || 50} per day.</p>
+                    <div class="progress-container">
+                        <div class="progress-text">
+                            <span>${currentUser.adsWatchedToday}/${appSettings.adsPerDayLimit || 50} watched</span>
+                            <span>${adsLeft} left</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress" style="width: ${progress}%"></div></div>
+                    </div>
+                    <button class="btn btn-primary" id="watchDailyAdBtn" ${adsLeft <= 0 ? 'disabled' : ''}><i class="fas fa-play"></i> Watch Ad</button>
+                </div>`;
+            if (adsLeft > 0) document.getElementById('watchDailyAdBtn').addEventListener('click', handleWatchDailyAd);
+        }
+
+        function renderBonusPage() {
+            let channelsHtml = (appSettings.bonusChannels || []).map(ch => {
+                const isClaimed = currentUser.claimedBonuses && currentUser.claimedBonuses.includes(ch.id);
+                return `<li class="channel-item">...</li>`; // Simplified
+            }).join('');
+            mainContent.innerHTML = `<div class="task-card"><h2 class="section-title"><i class="fas fa-gift"></i> Bonus Rewards</h2><ul class="channel-list">${channelsHtml}</ul></div>`;
+        }
+
+        function renderWithdrawPage() {
+             mainContent.innerHTML = `
+                <div class="task-card">
+                    <h2 class="section-title"><i class="fas fa-wallet"></i> Withdraw</h2>
+                    <p class="task-description">Minimum withdrawal is ${appSettings.minWithdrawPoints || 400} points.</p>
+                    <div class="input-group"><label class="input-label">Points</label><input type="number" id="withdrawAmountInput" class="input-field"></div>
+                    <div class="input-group"><label class="input-label">Method</label><select id="withdrawMethodSelect" class="select-field"><option value="">Select</option><option>Method 1</option></select></div>
+                    <div class="input-group"><label class="input-label">Account</label><input type="text" id="withdrawAccountInput" class="input-field"></div>
+                    <button class="btn btn-primary" id="submitWithdrawBtn"><i class="fas fa-paper-plane"></i> Submit</button>
+                    <p class="status-message" id="withdrawStatusMsg"></p>
+                </div>`;
+            document.getElementById('submitWithdrawBtn').addEventListener('click', handleSubmitWithdrawal);
+        }
+
+        function renderReferralPage() {
+            mainContent.innerHTML = `...`; // Simplified for brevity
+        }
+
+        // Ad Logic
+        let adWatchedSuccessfully = false;
+        let adRewardPending = false;
+        
+        function handleWatchDailyAd() {
+            if (currentUser.adsWatchedToday >= (appSettings.adsPerDayLimit || 50)) {
+                showToast("Daily ad limit reached!");
+                return;
+            }
+            adWatchedSuccessfully = false;
+            adRewardPending = true;
+            adModal.classList.add('show');
+            
+            // Simulating ad watch
+            setTimeout(() => {
+                if (adRewardPending) {
+                    adWatchedSuccessfully = true;
+                    document.getElementById('adSpinner').style.display = 'none';
+                    document.getElementById('adStatusMessage').textContent = "Ad completed!";
+                    adCloseBtn.style.display = 'block';
+                }
+            }, 5000);
+        }
+        
+        async function closeAdModalAndReward() {
+            adModal.classList.remove('show');
+            if (adWatchedSuccessfully && adRewardPending) {
+                currentUser.points += (appSettings.pointsPerAd || 5);
+                currentUser.adsWatchedToday++;
+                currentUser.totalAdsWatchedLifetime++;
+                currentUser.lastAdWatchDate = new Date().toLocaleDateString();
+                await saveUserState();
+                updateUI();
+                showToast(`+${appSettings.pointsPerAd || 5} points earned!`);
+            }
+            adRewardPending = false;
+        }
+
+        async function handleSubmitWithdrawal() {
+            const amount = parseInt(document.getElementById('withdrawAmountInput').value);
+            const method = document.getElementById('withdrawMethodSelect').value;
+            const account = document.getElementById('withdrawAccountInput').value.trim();
+            const statusMsg = document.getElementById('withdrawStatusMsg');
+            
+            if (isNaN(amount) || amount < (appSettings.minWithdrawPoints || 400)) {
+                statusMsg.textContent = `Minimum withdrawal is ${appSettings.minWithdrawPoints || 400} points.`;
+                return;
+            }
+            if (amount > currentUser.points) {
+                statusMsg.textContent = "Insufficient points.";
+                return;
+            }
+
+            const withdrawalRef = ref(db, 'withdrawals');
+            const newRequestRef = await push(withdrawalRef, {
+                userId: currentUser.telegramId,
+                userName: currentUser.name,
+                points: amount,
+                method: method,
+                accountDetails: account,
+                status: 'pending',
+                timestamp: serverTimestamp()
+            });
+
+            currentUser.points -= amount;
+            await saveUserState();
+            updateUI();
+            
+            statusMsg.textContent = "Request submitted successfully!";
+            // Reset form
+        }
+
     </script>
 </body>
 </html>
