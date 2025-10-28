@@ -92,7 +92,7 @@
         .ad-status { margin: 12px 0; color: var(--text-secondary); font-size: 0.9rem; }
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 20px; border-radius: 30px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); z-index: 1000; opacity: 0; transition: all 0.3s ease; font-size: 0.85rem; }
         .toast.show { opacity: 1; bottom: 90px; }
-        #adContainer { text-align: center; margin: 15px 0; }
+        #adContainer { display: none; } /* This is no longer needed to be visible */
     </style>
 </head>
 <body>
@@ -131,7 +131,7 @@
             <a href="#" class="nav-item" data-page="referral"><i class="fas fa-share-alt"></i><span>Referral</span></a>
         </div>
 
-        <div class="ad-modal-overlay" id="adModal"><div class="ad-modal"><h3 class="ad-modal-title" id="adModalTitle">Loading Ad...</h3><div class="spinner" id="adSpinner"></div><p class="ad-status" id="adStatusMessage">Please wait</p><button class="btn btn-primary" id="adCloseBtn" style="display: none;">Close & Claim</button></div></div>
+        <div class="ad-modal-overlay" id="adModal"><div class="ad-modal"><h3 class="ad-modal-title" id="adModalTitle">Watching Ad...</h3><div class="spinner" id="adSpinner"></div><p class="ad-status" id="adStatusMessage">Please wait</p><button class="btn btn-primary" id="adCloseBtn" style="display: none;">Close & Claim</button></div></div>
         <div class="toast" id="toast"></div>
     </div>
 
@@ -187,17 +187,6 @@
                 if (snapshot.exists()) {
                     appSettings = snapshot.val();
                     appNameEl.textContent = appSettings.appName || 'AD TO EARN';
-                    
-                    // =========================================================
-                    // ===== FIX FOR ADSTERRA SCRIPT LOADING IS APPLIED HERE =====
-                    // =========================================================
-                    if (appSettings.adScript) {
-                        // Directly inject the HTML string into the container div.
-                        // This allows the browser to correctly parse both script tags.
-                        adContainer.innerHTML = appSettings.adScript;
-                    }
-                    // =========================================================
-
                 } else {
                     appNameEl.textContent = 'AD TO EARN';
                     console.warn("Firebase 'settings' not found. Using default values.");
@@ -560,25 +549,42 @@
         let adRewardPending = false;
         
         function handleWatchDailyAd() {
+            // Check if daily limit is reached
             if (currentUser.adsWatchedToday >= (appSettings.adsPerDayLimit || 50)) {
                 showToast("Daily ad limit reached!");
                 return;
             }
+
+            // Check if the ad link is configured in settings
+            if (!appSettings.adScript || appSettings.adScript.trim() === '') {
+                showToast("Ad service is temporarily unavailable.");
+                return;
+            }
+
+            // Open the direct link in a new tab
+            window.open(appSettings.adScript, '_blank');
+
+            // --- Start the timer logic ---
             adWatchedSuccessfully = false;
             adRewardPending = true;
+
+            // Show the modal as a timer
             adModal.classList.add('show');
             document.getElementById('adSpinner').style.display = 'block';
-            document.getElementById('adStatusMessage').textContent = "Please wait while the ad is loading...";
+            document.getElementById('adModalTitle').textContent = "Reward in 20 seconds";
+            document.getElementById('adStatusMessage').textContent = "Ad opened in a new tab. Please wait for the timer to finish.";
             adCloseBtn.style.display = 'none';
             
+            // Set a 20-second timer
             setTimeout(() => {
-                if (adRewardPending) {
+                if (adRewardPending) { // Only proceed if the user hasn't closed it somehow
                     adWatchedSuccessfully = true;
                     document.getElementById('adSpinner').style.display = 'none';
-                    document.getElementById('adStatusMessage').textContent = "Ad completed successfully!";
+                    document.getElementById('adModalTitle').textContent = "Reward Ready!";
+                    document.getElementById('adStatusMessage').textContent = "You can now claim your reward.";
                     adCloseBtn.style.display = 'block';
                 }
-            }, 5000);
+            }, 20000); // 20000 milliseconds = 20 seconds
         }
         
         async function closeAdModalAndReward() {
